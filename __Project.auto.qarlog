@@ -1,0 +1,36 @@
+Quartus Prime Archive log --	C:/Users/kyhsp/Documents/release/assignment3_frame/__Project.auto.qarlog
+
+Archive:	C:/Users/kyhsp/Documents/release/assignment3_frame/__Project.auto.qar
+Date:		Wed Feb 06 13:12:26 2019
+Quartus Prime		18.0.0 Build 614 04/24/2018 SJ Lite Edition
+
+	=========== Files Selected: ===========
+C:/Users/kyhsp/Documents/release/assignment3_frame/Pll.cmp
+C:/Users/kyhsp/Documents/release/assignment3_frame/Pll.qip
+C:/Users/kyhsp/Documents/release/assignment3_frame/Pll.sip
+C:/Users/kyhsp/Documents/release/assignment3_frame/Pll.v
+C:/Users/kyhsp/Documents/release/assignment3_frame/Pll/Pll_0002.qip
+C:/Users/kyhsp/Documents/release/assignment3_frame/Pll/Pll_0002.v
+C:/Users/kyhsp/Documents/release/assignment3_frame/Pll_sim/Pll.vo
+C:/Users/kyhsp/Documents/release/assignment3_frame/Project.sdc
+C:/Users/kyhsp/Documents/release/assignment3_frame/Project.v
+C:/Users/kyhsp/Documents/release/assignment3_frame/Project_test.v
+C:/Users/kyhsp/Documents/release/assignment3_frame/SevenSeg.v
+C:/Users/kyhsp/Documents/release/assignment3_frame/Test.asm
+C:/Users/kyhsp/Documents/release/assignment3_frame/Test.mif
+C:/Users/kyhsp/Documents/release/assignment3_frame/db/Project.qpf
+C:/Users/kyhsp/Documents/release/assignment3_frame/fmedian2.asm
+Debug_assignment_defaults.qdf
+Project.archive.rpt
+Project.flow.rpt
+Project.map.rpt
+Project.map.summary
+Project.qsf
+Project.restore.rpt
+assignment_defaults.qdf
+fmedian2.mif
+test.hex
+	======= Total: 25 files to archive =======
+
+	================ Status: ===============
+All files archived successfully.
