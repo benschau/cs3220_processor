@@ -134,8 +134,13 @@ module Project(
     if(reset)
       inst_FE <= {INSTBITS{1'b0}};
     else
-	   // TODO: Specify inst_FE considering misprediction and stall
-		// ...
+      // DONE: set inst_FE accounting for misprediction/stalls
+      if (mispred_EX)
+        inst_FE <= {INSTBITS{1'b0}};
+      else if (stall_pipe)
+        inst_FE <= inst_FE;
+      else
+        inst_FE = inst_FE_w;
   end
 
 
@@ -175,9 +180,13 @@ module Project(
   reg [REGNOBITS-1:0] wregno_MEM;
   reg [INSTBITS-1:0] inst_ID;
 
-  // TODO: Specify signals such as op*_ID_w, imm_ID_w, r*_ID_w
+  // DONE: Specify signals such as op*_ID_w, imm_ID_w, r*_ID_w
   assign op1_ID_w = inst_FE[31:26];
-  // ...
+  assign op2_ID_w = inst_FE[25:18];
+  assign imm_ID_w = inst_FE[23:8];
+  assign rd_ID_w = inst_FE[11:8];
+  assign rs_ID_w = inst_FE[7:4];
+  assign rt_ID_w = inst_FE[3:0];
 
   // Read register values
   assign regval1_ID_w = regs[rs_ID_w];
@@ -186,21 +195,32 @@ module Project(
   // Sign extension
   SXT mysxt (.IN(imm_ID_w), .OUT(sxt_imm_ID_w));
 
-  // TODO: Specify control signals such as is_br_ID_w, is_jmp_ID_w, rd_mem_ID_w, etc.
+  // DONE: Specify control signals such as is_br_ID_w, is_jmp_ID_w, rd_mem_ID_w, etc.
   // You may add or change control signals if needed
-  // assign is_br_ID_w = ... ;
-  // ...
-  
+  assign is_br_ID_w = op1_ID_w[5:3] === 3'b001;
+  assign is_jmp_ID_w = op1_ID_w === OP1_JAL;
+  assign rd_mem_ID_w = op1_ID_w === OP1_LW;
+  assign wr_mem_ID_w = op1_ID_w === OP1_SW;
+  // Register writes occur on all instructions except non JAL branches and SW
+  assign wr_reg_ID_w = !((is_br_ID_w && !is_jmp_ID_w) || wr_mem_ID_w);
+
   assign ctrlsig_ID_w = {is_br_ID_w, is_jmp_ID_w, rd_mem_ID_w, wr_mem_ID_w, wr_reg_ID_w};
   
-  // TODO: Specify stall condition
-  // assign stall_pipe = ... ;
+  // DONE: Specify stall condition
+  wire chkRt;
+  // Rt is not used only in JAL, LW, and immediate arithmetic instructions
+  assign chkRt = !(op1_ID_w === OP1_JAL || op1_ID_w === OP1_LW || op1_ID_w[5:3] === 3'b100);
+  // Check if one of the registers this instruction depends on is going to be written to by the instructions 
+  // in EX or MEM. All instructions depend on Rs - only stall on write to Rt if this instruction actually
+  // depends on it.
+  assign stall_pipe = ((rs_ID_w === wregno_EX && wr_reg_EX_w) || (rs_ID_w === wregno_MEM && wr_reg_MEM_w))
+                      || (chkRt && ((rt_ID_w === wregno_EX && wr_reg_EX_w) || (rt_ID_w === wregno_MEM && wr_reg_MEM_w)));
 
   // ID_latch
   always @ (posedge clk or posedge reset) begin
     if(reset) begin
       PC_ID	 <= {DBITS{1'b0}};
-		inst_ID	 <= {INSTBITS{1'b0}};
+		  inst_ID	 <= {INSTBITS{1'b0}};
       op1_ID	 <= {OP1BITS{1'b0}};
       op2_ID	 <= {OP2BITS{1'b0}};
       regval1_ID  <= {DBITS{1'b0}};
@@ -208,7 +228,18 @@ module Project(
       wregno_ID	 <= {REGNOBITS{1'b0}};
       ctrlsig_ID <= 5'h0;
     end else begin
-      PC_ID	 <= PC_FE;
+      if (stall_pipe || mispred_EX) begin
+        PC_ID	 <= {DBITS{1'b0}};
+        inst_ID	 <= {INSTBITS{1'b0}};
+        op1_ID	 <= {OP1BITS{1'b0}};
+        op2_ID	 <= {OP2BITS{1'b0}};
+        regval1_ID  <= {DBITS{1'b0}};
+        regval2_ID  <= {DBITS{1'b0}};
+        wregno_ID	 <= {REGNOBITS{1'b0}};
+        ctrlsig_ID <= 5'h0;
+      end else begin
+        PC_ID	 <= PC_FE;
+      end
 		// TODO: Specify ID latches
 		// ...
     end
