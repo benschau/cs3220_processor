@@ -284,8 +284,20 @@ module Project(
       case (op2_ID)
 			OP2_EQ	 : aluout_EX_r = {31'b0, regval1_ID == regval2_ID};
 			OP2_LT	 : aluout_EX_r = {31'b0, regval1_ID < regval2_ID};
-			// TODO: complete OP2_*...
-	default	 : aluout_EX_r = {DBITS{1'b0}};
+      // DONE: complete OP2_*
+      OP2_LE   : aluout_EX_r = {31'b0, regval1_ID <= regval2_ID};
+      OP2_NE   : aluout_EX_r = {31'b0, regval1_ID !== regval2_ID};
+      OP2_ADD  : aluout_EX_r = regval1_ID + regval2_ID;
+      OP2_AND  : aluout_EX_r = regval1_ID & regval2_ID;
+      OP2_OR   : aluout_EX_r = regval1_ID | regval2_ID;
+      OP2_XOR  : aluout_EX_r = regval1_ID ^ regval2_ID;
+      OP2_SUB  : aluout_EX_r = regval1_ID - regval2_ID;
+      OP2_NAND : aluout_EX_r = ~(regval1_ID & regval2_ID);
+      OP2_NOR  : aluout_EX_r = ~(regval1_ID | regval2_ID);
+      OP2_NXOR : aluout_EX_r = ~(regval1_ID ^ regval2_ID);
+      OP2_RSHF : aluout_EX_r = regval1_ID >> regval2_ID;
+      OP2_LSHF : aluout_EX_r = regval1_ID << regval2_ID;
+	    default	 : aluout_EX_r = {DBITS{1'b0}};
       endcase
     else if(op1_ID == OP1_LW || op1_ID == OP1_SW || op1_ID == OP1_ADDI)
       aluout_EX_r = regval1_ID + immval_ID;
@@ -303,9 +315,9 @@ module Project(
   assign is_jmp_EX_w = ctrlsig_ID[3];
   assign wr_reg_EX_w = ctrlsig_ID[0];
   
-  // TODO: Specify signals such as mispred_EX_w, pcgood_EX_w
-  // assign mispred_EX_w = ... ;
-  // assign pcgood_EX_w = ... ;
+  // DONE: Specify signals such as mispred_EX_w, pcgood_EX_w
+  assign mispred_EX_w = br_cond_EX || is_jmp_EX_w;
+  assign pcgood_EX_w = is_jmp_EX_w ? PC_ID + 4*immval_ID : regval1_ID + 4*immval_ID;
 
   // EX_latch
   always @ (posedge clk or posedge reset) begin

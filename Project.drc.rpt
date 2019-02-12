@@ -1,5 +1,5 @@
 Design Assistant report for Project
-Tue Feb 12 15:47:54 2019
+Tue Feb 12 16:11:08 2019
 Quartus Prime Version 18.1.0 Build 625 09/12/2018 SJ Lite Edition
 
 
@@ -36,7 +36,7 @@ refer to the applicable agreement for further details.
 +-------------------------------------------------------------------------+
 ; Design Assistant Summary                                                ;
 +-----------------------------------+-------------------------------------+
-; Design Assistant Status           ; Analyzed - Tue Feb 12 15:47:54 2019 ;
+; Design Assistant Status           ; Analyzed - Tue Feb 12 16:11:08 2019 ;
 ; Revision Name                     ; Project                             ;
 ; Top-level Entity Name             ; Project                             ;
 ; Family                            ; Cyclone V                           ;
@@ -153,7 +153,7 @@ refer to the applicable agreement for further details.
 Info: *******************************************************************
 Info: Running Quartus Prime Design Assistant
     Info: Version 18.1.0 Build 625 09/12/2018 SJ Lite Edition
-    Info: Processing started: Tue Feb 12 15:47:52 2019
+    Info: Processing started: Tue Feb 12 16:11:07 2019
 Info: Command: quartus_drc Project -c Project
 Warning (18236): Number of processors has not been specified which may cause overloading on shared machines.  Set the global assignment NUM_PARALLEL_PROCESSORS in your QSF to an appropriate value for best performance.
 Info (332104): Reading SDC File: 'Project.sdc'
@@ -201,8 +201,8 @@ Info (308044): (Information) Rule T102: Top nodes with the highest number of fan
 Info (308007): Design Assistant information: finished post-fitting analysis of current design -- generated 50 information messages and 0 warning messages
 Info: Quartus Prime Design Assistant was successful. 0 errors, 5 warnings
     Info: Peak virtual memory: 4740 megabytes
-    Info: Processing ended: Tue Feb 12 15:47:54 2019
-    Info: Elapsed time: 00:00:02
+    Info: Processing ended: Tue Feb 12 16:11:08 2019
+    Info: Elapsed time: 00:00:01
     Info: Total CPU time (on all processors): 00:00:01
 
 
