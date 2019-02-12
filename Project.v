@@ -203,6 +203,9 @@ module Project(
   assign wr_mem_ID_w = op1_ID_w === OP1_SW;
   // Register writes occur on all instructions except non JAL branches and SW
   assign wr_reg_ID_w = !((is_br_ID_w && !is_jmp_ID_w) || wr_mem_ID_w);
+  // Among instructions which write back, Rd is target for all ALUR instructions,
+  // and Rt is target for all others
+  assign wregno_ID_w = (op1_ID_w === OP1_ALUR) ? rd_ID_w : rt_ID_w;
 
   assign ctrlsig_ID_w = {is_br_ID_w, is_jmp_ID_w, rd_mem_ID_w, wr_mem_ID_w, wr_reg_ID_w};
   
@@ -228,6 +231,7 @@ module Project(
       wregno_ID	 <= {REGNOBITS{1'b0}};
       ctrlsig_ID <= 5'h0;
     end else begin
+      // DONE: specify ID latches
       if (stall_pipe || mispred_EX) begin
         PC_ID	 <= {DBITS{1'b0}};
         inst_ID	 <= {INSTBITS{1'b0}};
@@ -239,9 +243,14 @@ module Project(
         ctrlsig_ID <= 5'h0;
       end else begin
         PC_ID	 <= PC_FE;
+        inst_ID <= inst_FE;
+        op1_ID <= op1_ID_w;
+        op2_ID <= op2_ID_w;
+        regval1_ID <= regval1_ID_w;
+        regval2_ID <= regval2_ID_w;
+        wregno_ID <= wregno_ID_w;
+        ctrlsig_ID <= ctrlsig_ID_w;
       end
-		// TODO: Specify ID latches
-		// ...
     end
   end
 
