@@ -14,6 +14,8 @@ wire [6:0] HEX3;
 wire [6:0] HEX4;
 wire [6:0] HEX5;
 wire [9:0] LEDR;
+wire [31:0] PC_FE;
+wire [31:0] PCPLUS_FE;
 
 Project myprj(
 	.CLOCK_50(CLOCK_50),
@@ -26,7 +28,9 @@ Project myprj(
 	.HEX3(HEX3),
 	.HEX4(HEX4),
 	.HEX5(HEX5),
-	.LEDR(LEDR)
+	.LEDR(LEDR),
+	.PCFE(PC_FE),
+	.PCPLUSFE(PCPLUS_FE)
 );
 
 initial begin	

@@ -9,7 +9,9 @@ module Project(
   output [6:0] HEX3,
   output [6:0] HEX4,
   output [6:0] HEX5,
-  output [9:0] LEDR
+  output [9:0] LEDR,
+  output [31:0] PCFE,
+  output [31:0] PCPLUSFE
 );
 
   parameter DBITS    = 32;
@@ -129,6 +131,10 @@ module Project(
   assign pcplus_FE = PC_FE + INSTSIZE;
   // This is the predicted value of the PC that we use to fetch the next instruction
   assign pcpred_FE = pcplus_FE;
+  
+  // for waveform modelsim:
+  assign PCPLUSFE = pcplus_FE;
+  assign PCFE = PC_FE;
 
   // FE_latch
   always @ (posedge clk or posedge reset) begin
