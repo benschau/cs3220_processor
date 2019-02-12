@@ -96,14 +96,15 @@ module Project(
   wire [DBITS-1:0] inst_FE_w;
   wire stall_pipe;
   wire mispred_EX_w;
+  // Note: used to use output of EX latch, changed to 
+  // take branch during EX stage instead of after
+  wire [DBITS-1:0] pcgood_EX_w;
   
-  reg [DBITS-1:0] pcgood_EX;
   reg [DBITS-1:0] PC_FE;
   reg [INSTBITS-1:0] inst_FE;
   // I-MEM
   (* ram_init_file = IMEMINITFILE *)
   reg [DBITS-1:0] imem [IMEMWORDS-1:0];
-  reg mispred_EX;
   
   // This statement is used to initialize the I-MEM
   // during simulation using Model-Sim
@@ -116,8 +117,8 @@ module Project(
   always @ (posedge clk or posedge reset) begin
     if(reset)
       PC_FE <= STARTPC;
-    else if(mispred_EX)
-      PC_FE <= pcgood_EX;
+    else if(mispred_EX_w)
+      PC_FE <= pcgood_EX_w;
     else if(!stall_pipe)
       PC_FE <= pcpred_FE;
     else
@@ -135,7 +136,7 @@ module Project(
       inst_FE <= {INSTBITS{1'b0}};
     else
       // DONE: set inst_FE accounting for misprediction/stalls
-      if (mispred_EX)
+      if (mispred_EX_w)
         inst_FE <= {INSTBITS{1'b0}};
       else if (stall_pipe)
         inst_FE <= inst_FE;
@@ -232,7 +233,7 @@ module Project(
       ctrlsig_ID <= 5'h0;
     end else begin
       // DONE: specify ID latches
-      if (stall_pipe || mispred_EX) begin
+      if (stall_pipe || mispred_EX_w) begin
         PC_ID	 <= {DBITS{1'b0}};
         inst_ID	 <= {INSTBITS{1'b0}};
         op1_ID	 <= {OP1BITS{1'b0}};
@@ -259,7 +260,6 @@ module Project(
 
   wire is_br_EX_w;
   wire is_jmp_EX_w;
-  wire [DBITS-1:0] pcgood_EX_w;
 
   reg [INSTBITS-1:0] inst_EX; /* This is for debugging */
   reg br_cond_EX;
@@ -299,6 +299,8 @@ module Project(
       OP2_LSHF : aluout_EX_r = regval1_ID << regval2_ID;
 	    default	 : aluout_EX_r = {DBITS{1'b0}};
       endcase
+    else if(op1_ID == OP1_JAL)
+      aluout_EX_r = PC_ID;
     else if(op1_ID == OP1_LW || op1_ID == OP1_SW || op1_ID == OP1_ADDI)
       aluout_EX_r = regval1_ID + immval_ID;
     else if(op1_ID == OP1_ANDI)
@@ -322,16 +324,18 @@ module Project(
   // EX_latch
   always @ (posedge clk or posedge reset) begin
     if(reset) begin
-	   inst_EX	 <= {INSTBITS{1'b0}};
+	    inst_EX	   <= {INSTBITS{1'b0}};
       aluout_EX	 <= {DBITS{1'b0}};
       wregno_EX	 <= {REGNOBITS{1'b0}};
       ctrlsig_EX <= 3'h0;
-      mispred_EX <= 1'b0;
-		pcgood_EX  <= {DBITS{1'b0}};
-		regval2_EX	<= {DBITS{1'b0}};
+		  regval2_EX <= {DBITS{1'b0}};
     end else begin
-		// TODO: Specify EX latches
-		// ...
+		  // TODO: Specify EX latches
+      inst_EX <= inst_ID;
+      aluout_EX <= aluout_EX_r;
+      wregno_EX <= wregno_ID;
+      ctrlsig_EX <= ctrlsig_ID[2:0];
+      regval2_EX <= regval2_ID;
     end
   end
   
