@@ -9,9 +9,7 @@ module Project(
   output [6:0] HEX3,
   output [6:0] HEX4,
   output [6:0] HEX5,
-  output [9:0] LEDR,
-  output [31:0] PCFE,
-  output [31:0] PCPLUSFE
+  output [9:0] LEDR
 );
 
   parameter DBITS    = 32;
@@ -435,12 +433,13 @@ module Project(
   always @ (posedge clk or posedge reset) begin
     if(reset)
 	   HEX_out <= 24'hFEDEAD;
-	 else if(wr_mem_MEM_w && (memaddr_MEM_w == ADDRHEX))
-      HEX_out <= regval2_EX[HEXBITS-1:0];
+	 //else if(wr_mem_MEM_w && (memaddr_MEM_w == ADDRHEX))
+    //  HEX_out <= regval2_EX[HEXBITS-1:0];
+	 else 
+		HEX_out <= PC_ID[HEXBITS-1:0];
   end
 
   // TODO: Write the code for LEDR here
-
   reg [9:0] LEDR_out;
   
   // ...
