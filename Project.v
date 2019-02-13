@@ -444,6 +444,12 @@ module Project(
   reg [9:0] LEDR_out;
   
   // ...
+  always @ (posedge clk or posedge reset) begin
+    if(reset)
+		LEDR_out <= 10'd0;
+	 else if(wr_mem_MEM_w && (memaddr_MEM_w == ADDRLEDR))
+	   LEDR_out <= regval2_EX[HEXBITS-1:0];
+  end
 
   assign LEDR = LEDR_out;
   
