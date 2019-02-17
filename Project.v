@@ -108,9 +108,9 @@ module Project(
   
   // This statement is used to initialize the I-MEM
   // during simulation using Model-Sim
-  //initial begin
-  //  $readmemh("test.hex", imem);
-  //end
+  initial begin
+    $readmemh("test.hex", imem);
+  end
     
   assign inst_FE_w = imem[PC_FE[IMEMADDRBITS-1:IMEMWORDBITS]];
   
@@ -130,10 +130,6 @@ module Project(
   // This is the predicted value of the PC that we use to fetch the next instruction
   assign pcpred_FE = pcplus_FE;
   
-  // for waveform modelsim:
-  assign PCPLUSFE = pcplus_FE;
-  assign PCFE = PC_FE;
-
   // FE_latch
   always @ (posedge clk or posedge reset) begin
     if(reset)
@@ -192,7 +188,7 @@ module Project(
   assign rd_ID_w = inst_FE[11:8];
   assign rs_ID_w = inst_FE[7:4];
   assign rt_ID_w = inst_FE[3:0];
-
+ 
   // Read register values
   assign regval1_ID_w = regs[rs_ID_w];
   assign regval2_ID_w = regs[rt_ID_w];
@@ -228,7 +224,7 @@ module Project(
   always @ (posedge clk or posedge reset) begin
     if(reset) begin
       PC_ID	 <= {DBITS{1'b0}};
-		  inst_ID	 <= {INSTBITS{1'b0}};
+		inst_ID	 <= {INSTBITS{1'b0}};
       op1_ID	 <= {OP1BITS{1'b0}};
       op2_ID	 <= {OP2BITS{1'b0}};
       regval1_ID  <= {DBITS{1'b0}};
@@ -284,26 +280,26 @@ module Project(
   end
 
   always @ (op1_ID or op2_ID or regval1_ID or regval2_ID or immval_ID) begin
-    if(op1_ID == OP1_ALUR)
+    if(op1_ID == OP1_ALUR) begin
       case (op2_ID)
 			OP2_EQ	 : aluout_EX_r = {31'b0, regval1_ID == regval2_ID};
 			OP2_LT	 : aluout_EX_r = {31'b0, regval1_ID < regval2_ID};
-      // DONE: complete OP2_*
-      OP2_LE   : aluout_EX_r = {31'b0, regval1_ID <= regval2_ID};
-      OP2_NE   : aluout_EX_r = {31'b0, regval1_ID !== regval2_ID};
-      OP2_ADD  : aluout_EX_r = regval1_ID + regval2_ID;
-      OP2_AND  : aluout_EX_r = regval1_ID & regval2_ID;
-      OP2_OR   : aluout_EX_r = regval1_ID | regval2_ID;
-      OP2_XOR  : aluout_EX_r = regval1_ID ^ regval2_ID;
-      OP2_SUB  : aluout_EX_r = regval1_ID - regval2_ID;
-      OP2_NAND : aluout_EX_r = ~(regval1_ID & regval2_ID);
-      OP2_NOR  : aluout_EX_r = ~(regval1_ID | regval2_ID);
-      OP2_NXOR : aluout_EX_r = ~(regval1_ID ^ regval2_ID);
-      OP2_RSHF : aluout_EX_r = regval1_ID >> regval2_ID;
-      OP2_LSHF : aluout_EX_r = regval1_ID << regval2_ID;
-	    default	 : aluout_EX_r = {DBITS{1'b0}};
+			// DONE: complete OP2_*
+			OP2_LE   : aluout_EX_r = {31'b0, regval1_ID <= regval2_ID};
+			OP2_NE   : aluout_EX_r = {31'b0, regval1_ID !== regval2_ID};
+			OP2_ADD  : aluout_EX_r = regval1_ID + regval2_ID;
+			OP2_AND  : aluout_EX_r = regval1_ID & regval2_ID;
+			OP2_OR   : aluout_EX_r = regval1_ID | regval2_ID;
+			OP2_XOR  : aluout_EX_r = regval1_ID ^ regval2_ID;
+			OP2_SUB  : aluout_EX_r = regval1_ID - regval2_ID;
+			OP2_NAND : aluout_EX_r = ~(regval1_ID & regval2_ID);
+			OP2_NOR  : aluout_EX_r = ~(regval1_ID | regval2_ID);
+			OP2_NXOR : aluout_EX_r = ~(regval1_ID ^ regval2_ID);
+			OP2_RSHF : aluout_EX_r = regval1_ID >> regval2_ID;
+			OP2_LSHF : aluout_EX_r = regval1_ID << regval2_ID;
+			default	: aluout_EX_r = {DBITS{1'b0}};
       endcase
-    else if(op1_ID == OP1_JAL)
+    end else if(op1_ID == OP1_JAL)
       aluout_EX_r = PC_ID;
     else if(op1_ID == OP1_LW || op1_ID == OP1_SW || op1_ID == OP1_ADDI)
       aluout_EX_r = regval1_ID + immval_ID;
@@ -433,10 +429,10 @@ module Project(
   always @ (posedge clk or posedge reset) begin
     if(reset)
 	   HEX_out <= 24'hFEDEAD;
-	 //else if(wr_mem_MEM_w && (memaddr_MEM_w == ADDRHEX))
-    //  HEX_out <= regval2_EX[HEXBITS-1:0];
+	 else if(wr_mem_MEM_w && (memaddr_MEM_w == ADDRHEX))
+      HEX_out <= regval2_EX[HEXBITS-1:0];
 	 else 
-		HEX_out <= PC_ID[HEXBITS-1:0];
+		HEX_out <= PC_FE[HEXBITS-1:0];
   end
 
   // TODO: Write the code for LEDR here
@@ -447,7 +443,7 @@ module Project(
     if(reset)
 		LEDR_out <= 10'd0;
 	 else if(wr_mem_MEM_w && (memaddr_MEM_w == ADDRLEDR))
-	   LEDR_out <= regval2_EX[HEXBITS-1:0];
+	   LEDR_out <= regval2_EX[LEDRBITS-1:0];
   end
 
   assign LEDR = LEDR_out;
