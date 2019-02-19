@@ -111,6 +111,7 @@ module Project(
   initial begin
     $readmemh("test.hex", imem);
   end
+  
     
   assign inst_FE_w = imem[PC_FE[IMEMADDRBITS-1:IMEMWORDBITS]];
   
@@ -134,14 +135,12 @@ module Project(
   always @ (posedge clk or posedge reset) begin
     if(reset)
       inst_FE <= {INSTBITS{1'b0}};
+    else if (mispred_EX_w) // DONE: set inst_FE accounting for misprediction/stalls
+      inst_FE <= {INSTBITS{1'b0}};
+    else if (stall_pipe)
+      inst_FE <= inst_FE;
     else
-      // DONE: set inst_FE accounting for misprediction/stalls
-      if (mispred_EX_w)
-        inst_FE <= {INSTBITS{1'b0}};
-      else if (stall_pipe)
-        inst_FE <= inst_FE;
-      else
-        inst_FE = inst_FE_w;
+      inst_FE = inst_FE_w;
   end
 
 
@@ -319,21 +318,22 @@ module Project(
   
   // DONE: Specify signals such as mispred_EX_w, pcgood_EX_w
   assign mispred_EX_w = br_cond_EX || is_jmp_EX_w;
-  assign pcgood_EX_w = is_jmp_EX_w ? PC_ID + 4*immval_ID : regval1_ID + 4*immval_ID;
+  //assign pcgood_EX_w = is_jmp_EX_w ? (PC_ID + 4*immval_ID) : (regval1_ID + 4*immval_ID);
+  assign pcgood_EX_w = is_jmp_EX_w ? (regval1_ID + 4*immval_ID) : (PC_ID + 4*immval_ID) ;
 
   // EX_latch
   always @ (posedge clk or posedge reset) begin
     if(reset) begin
-	    inst_EX	   <= {INSTBITS{1'b0}};
-      aluout_EX	 <= {DBITS{1'b0}};
-      wregno_EX	 <= {REGNOBITS{1'b0}};
+	   inst_EX	  <= {INSTBITS{1'b0}};
+      aluout_EX  <= {DBITS{1'b0}};
+      wregno_EX  <= {REGNOBITS{1'b0}};
       ctrlsig_EX <= 3'h0;
-		  regval2_EX <= {DBITS{1'b0}};
+		regval2_EX <= {DBITS{1'b0}};
     end else begin
-		  // TODO: Specify EX latches
-      inst_EX <= inst_ID;
-      aluout_EX <= aluout_EX_r;
-      wregno_EX <= wregno_ID;
+		// TODO: Specify EX latches
+      inst_EX    <= inst_ID;
+      aluout_EX  <= aluout_EX_r;
+      wregno_EX  <= wregno_ID;
       ctrlsig_EX <= ctrlsig_ID[2:0];
       regval2_EX <= regval2_ID;
     end
