@@ -108,9 +108,11 @@ module Project(
   
   // This statement is used to initialize the I-MEM
   // during simulation using Model-Sim
+  /*
   initial begin
     $readmemh("test.hex", imem);
   end
+  */
   
     
   assign inst_FE_w = imem[PC_FE[IMEMADDRBITS-1:IMEMWORDBITS]];
@@ -226,6 +228,7 @@ module Project(
 		inst_ID	 <= {INSTBITS{1'b0}};
       op1_ID	 <= {OP1BITS{1'b0}};
       op2_ID	 <= {OP2BITS{1'b0}};
+		immval_ID <= {IMMBITS{1'b0}};
       regval1_ID  <= {DBITS{1'b0}};
       regval2_ID  <= {DBITS{1'b0}};
       wregno_ID	 <= {REGNOBITS{1'b0}};
@@ -237,6 +240,7 @@ module Project(
         inst_ID	 <= {INSTBITS{1'b0}};
         op1_ID	 <= {OP1BITS{1'b0}};
         op2_ID	 <= {OP2BITS{1'b0}};
+		  immval_ID <= {IMMBITS{1'b0}};
         regval1_ID  <= {DBITS{1'b0}};
         regval2_ID  <= {DBITS{1'b0}};
         wregno_ID	 <= {REGNOBITS{1'b0}};
@@ -246,6 +250,7 @@ module Project(
         inst_ID <= inst_FE;
         op1_ID <= op1_ID_w;
         op2_ID <= op2_ID_w;
+		  immval_ID <= sxt_imm_ID_w;
         regval1_ID <= regval1_ID_w;
         regval2_ID <= regval2_ID_w;
         wregno_ID <= wregno_ID_w;
@@ -293,13 +298,13 @@ module Project(
 			OP2_SUB  : aluout_EX_r = regval1_ID - regval2_ID;
 			OP2_NAND : aluout_EX_r = ~(regval1_ID & regval2_ID);
 			OP2_NOR  : aluout_EX_r = ~(regval1_ID | regval2_ID);
-			OP2_NXOR : aluout_EX_r = ~(regval1_ID ^ regval2_ID);
+			OP2_NXOR : aluout_EX_r = regval1_ID ~^ regval2_ID;
 			OP2_RSHF : aluout_EX_r = regval1_ID >> regval2_ID;
 			OP2_LSHF : aluout_EX_r = regval1_ID << regval2_ID;
 			default	: aluout_EX_r = {DBITS{1'b0}};
       endcase
     end else if(op1_ID == OP1_JAL)
-      aluout_EX_r = PC_ID;
+      aluout_EX_r = pcplus_FE;
     else if(op1_ID == OP1_LW || op1_ID == OP1_SW || op1_ID == OP1_ADDI)
       aluout_EX_r = regval1_ID + immval_ID;
     else if(op1_ID == OP1_ANDI)
@@ -319,7 +324,7 @@ module Project(
   // DONE: Specify signals such as mispred_EX_w, pcgood_EX_w
   assign mispred_EX_w = br_cond_EX || is_jmp_EX_w;
   //assign pcgood_EX_w = is_jmp_EX_w ? (PC_ID + 4*immval_ID) : (regval1_ID + 4*immval_ID);
-  assign pcgood_EX_w = is_jmp_EX_w ? (regval1_ID + 4*immval_ID) : (PC_ID + 4*immval_ID) ;
+  assign pcgood_EX_w = is_jmp_EX_w ? (regval1_ID + 4*immval_ID) : (PC_ID + 4*immval_ID);
 
   // EX_latch
   always @ (posedge clk or posedge reset) begin
@@ -431,8 +436,6 @@ module Project(
 	   HEX_out <= 24'hFEDEAD;
 	 else if(wr_mem_MEM_w && (memaddr_MEM_w == ADDRHEX))
       HEX_out <= regval2_EX[HEXBITS-1:0];
-	 else 
-		HEX_out <= PC_FE[HEXBITS-1:0];
   end
 
   // TODO: Write the code for LEDR here
