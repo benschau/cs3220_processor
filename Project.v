@@ -108,10 +108,12 @@ module Project(
   
   // This statement is used to initialize the I-MEM
   // during simulation using Model-Sim
-  
+  /*
   initial begin
     $readmemh("test.hex", imem);
   end
+  */
+  
     
   assign inst_FE_w = imem[PC_FE[IMEMADDRBITS-1:IMEMWORDBITS]];
   
@@ -122,6 +124,8 @@ module Project(
       PC_FE <= pcgood_EX_w;
     else if(!stall_pipe)
       PC_FE <= pcpred_FE;
+    else
+      PC_FE <= PC_FE;
   end
 
   // This is the value of "incremented PC", computed in the FE stage
@@ -300,7 +304,7 @@ module Project(
 			default	: aluout_EX_r = {DBITS{1'b0}};
       endcase
     end else if(op1_ID == OP1_JAL)
-      aluout_EX_r = pcpred_FE;
+      aluout_EX_r = pcplus_FE;
     else if(op1_ID == OP1_LW || op1_ID == OP1_SW || op1_ID == OP1_ADDI)
       aluout_EX_r = regval1_ID + immval_ID;
     else if(op1_ID == OP1_ANDI)
@@ -318,11 +322,9 @@ module Project(
   assign wr_reg_EX_w = ctrlsig_ID[0];
   
   // DONE: Specify signals such as mispred_EX_w, pcgood_EX_w
-  //assign mispred_EX_w = br_cond_EX || is_jmp_EX_w;
-  assign mispred_EX_w = is_br_EX_w || is_jmp_EX_w;
-  
+  assign mispred_EX_w = br_cond_EX || is_jmp_EX_w;
   //assign pcgood_EX_w = is_jmp_EX_w ? (PC_ID + 4*immval_ID) : (regval1_ID + 4*immval_ID);
-  assign pcgood_EX_w = is_jmp_EX_w ? (regval1_ID + 4*immval_ID) : (is_br_EX_w && br_cond_EX) ? (pcpred_FE + 4*immval_ID) : pcpred_FE;
+  assign pcgood_EX_w = is_jmp_EX_w ? (regval1_ID + 4*immval_ID) : (PC_ID + 4*immval_ID);
 
   // EX_latch
   always @ (posedge clk or posedge reset) begin
