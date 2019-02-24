@@ -108,11 +108,11 @@ module Project(
   
   // This statement is used to initialize the I-MEM
   // during simulation using Model-Sim
-  /*
+  
   initial begin
     $readmemh("test.hex", imem);
   end
-  */
+  
   
     
   assign inst_FE_w = imem[PC_FE[IMEMADDRBITS-1:IMEMWORDBITS]];
@@ -218,8 +218,8 @@ module Project(
   // Check if one of the registers this instruction depends on is going to be written to by the instructions 
   // in EX or MEM. All instructions depend on Rs - only stall on write to Rt if this instruction actually
   // depends on it.
-  assign stall_pipe = ((rs_ID_w === wregno_EX && wr_reg_EX_w) || (rs_ID_w === wregno_MEM && wr_reg_MEM_w))
-                      || (chkRt && ((rt_ID_w === wregno_EX && wr_reg_EX_w) || (rt_ID_w === wregno_MEM && wr_reg_MEM_w)));
+  assign stall_pipe = ((rs_ID_w === wregno_ID && ctrlsig_ID[0]) || (rs_ID_w === wregno_EX && ctrlsig_EX[0]))
+                      || (chkRt && ((rt_ID_w === wregno_ID && ctrlsig_ID[0]) || (rt_ID_w === wregno_EX && ctrlsig_EX[0])));
 
   // ID_latch
   always @ (posedge clk or posedge reset) begin
@@ -304,7 +304,7 @@ module Project(
 			default	: aluout_EX_r = {DBITS{1'b0}};
       endcase
     end else if(op1_ID == OP1_JAL)
-      aluout_EX_r = pcplus_FE;
+      aluout_EX_r = PC_ID;
     else if(op1_ID == OP1_LW || op1_ID == OP1_SW || op1_ID == OP1_ADDI)
       aluout_EX_r = regval1_ID + immval_ID;
     else if(op1_ID == OP1_ANDI)
