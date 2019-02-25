@@ -25,8 +25,8 @@ module Project(
   parameter ADDRSW   = 32'hFFFFF090;
 
   // Change this to fmedian2.mif before submitting
-  parameter IMEMINITFILE = "Test.mif";
-  //parameter IMEMINITFILE = "fmedian2.mif";
+  //parameter IMEMINITFILE = "Test.mif";
+  parameter IMEMINITFILE = "fmedian2.mif";
   
   parameter IMEMADDRBITS = 16;
   parameter IMEMWORDBITS = 2;
@@ -108,12 +108,11 @@ module Project(
   
   // This statement is used to initialize the I-MEM
   // during simulation using Model-Sim
-  
+  /*
   initial begin
     $readmemh("test.hex", imem);
   end
-  
-  
+  */
     
   assign inst_FE_w = imem[PC_FE[IMEMADDRBITS-1:IMEMWORDBITS]];
   
