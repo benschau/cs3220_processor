@@ -217,8 +217,16 @@ module Project(
   // Check if one of the registers this instruction depends on is going to be written to by the instructions 
   // in EX or MEM. All instructions depend on Rs - only stall on write to Rt if this instruction actually
   // depends on it.
-  assign stall_pipe = ((rs_ID_w === wregno_ID && ctrlsig_ID[0]) || (rs_ID_w === wregno_EX && ctrlsig_EX[0]))
-                      || (chkRt && ((rt_ID_w === wregno_ID && ctrlsig_ID[0]) || (rt_ID_w === wregno_EX && ctrlsig_EX[0])));
+  wire rs_ex_dep_w;
+  wire rs_mem_dep_w;
+  wire rt_ex_dep_w;
+  wire rt_mem_dep_w;
+  
+  assign rs_ex_dep_w = rs_ID_w === wregno_ID && ctrlsig_ID[0];
+  assign rs_mem_dep_w = rs_ID_w === wregno_EX && ctrlsig_EX[0];
+  assign rt_ex_dep_w = chkRt && rt_ID_w === wregno_ID && ctrlsig_ID[0];
+  assign rt_mem_dep_w = chkRt && rt_ID_w === wregno_EX && ctrlsig_EX[0];
+  assign stall_pipe = (rs_ex_dep_w || rt_ex_dep_w) && op1_ID === OP1_LW;
 
   // ID_latch
   always @ (posedge clk or posedge reset) begin
@@ -250,8 +258,18 @@ module Project(
         op1_ID <= op1_ID_w;
         op2_ID <= op2_ID_w;
 		  immval_ID <= sxt_imm_ID_w;
-        regval1_ID <= regval1_ID_w;
-        regval2_ID <= regval2_ID_w;
+		  if (rs_ex_dep_w)
+		    regval1_ID <= aluout_EX_r;
+		  else if (rs_mem_dep_w)
+		    regval1_ID <= rd_mem_MEM_w ? rd_val_MEM_w : aluout_EX;
+		  else
+		    regval1_ID <= regval1_ID_w;
+		  if (rt_ex_dep_w)
+		    regval2_ID <= aluout_EX_r;
+		  else if (rt_mem_dep_w)
+		    regval2_ID <= rd_mem_MEM_w ? rd_val_MEM_w : aluout_EX;
+		  else
+			 regval2_ID <= regval2_ID_w;
         wregno_ID <= wregno_ID_w;
         ctrlsig_ID <= ctrlsig_ID_w;
       end

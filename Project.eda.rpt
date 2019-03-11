@@ -1,5 +1,5 @@
 EDA Netlist Writer report for Project
-Tue Feb 12 16:48:20 2019
+Sun Mar 10 22:17:25 2019
 Quartus Prime Version 18.1.0 Build 625 09/12/2018 SJ Lite Edition
 
 
@@ -36,7 +36,7 @@ refer to the applicable agreement for further details.
 +-------------------------------------------------------------------+
 ; EDA Netlist Writer Summary                                        ;
 +---------------------------+---------------------------------------+
-; EDA Netlist Writer Status ; Successful - Tue Feb 12 16:48:20 2019 ;
+; EDA Netlist Writer Status ; Successful - Sun Mar 10 22:17:25 2019 ;
 ; Revision Name             ; Project                               ;
 ; Top-level Entity Name     ; Project                               ;
 ; Family                    ; Cyclone V                             ;
@@ -81,14 +81,14 @@ refer to the applicable agreement for further details.
 Info: *******************************************************************
 Info: Running Quartus Prime EDA Netlist Writer
     Info: Version 18.1.0 Build 625 09/12/2018 SJ Lite Edition
-    Info: Processing started: Tue Feb 12 16:48:17 2019
+    Info: Processing started: Sun Mar 10 22:17:23 2019
 Info: Command: quartus_eda --read_settings_files=off --write_settings_files=off Project -c Project
 Warning (18236): Number of processors has not been specified which may cause overloading on shared machines.  Set the global assignment NUM_PARALLEL_PROCESSORS in your QSF to an appropriate value for best performance.
 Warning (10905): Generated the EDA functional simulation netlist because it is the only supported netlist type for this device.
 Info (204019): Generated file Project.vo in folder "C:/Users/Jared/Documents/CS3220/cs3220_assgn3/simulation/modelsim/" for EDA simulation tool
 Info: Quartus Prime EDA Netlist Writer was successful. 0 errors, 2 warnings
-    Info: Peak virtual memory: 4844 megabytes
-    Info: Processing ended: Tue Feb 12 16:48:20 2019
+    Info: Peak virtual memory: 4850 megabytes
+    Info: Processing ended: Sun Mar 10 22:17:26 2019
     Info: Elapsed time: 00:00:03
     Info: Total CPU time (on all processors): 00:00:03
 
