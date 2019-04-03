@@ -1,5 +1,5 @@
 Design Assistant report for Project
-Sun Mar 10 22:51:18 2019
+Wed Apr 03 16:21:33 2019
 Quartus Prime Version 18.1.0 Build 625 09/12/2018 SJ Lite Edition
 
 
@@ -38,7 +38,7 @@ refer to the applicable agreement for further details.
 +-------------------------------------------------------------------------+
 ; Design Assistant Summary                                                ;
 +-----------------------------------+-------------------------------------+
-; Design Assistant Status           ; Analyzed - Sun Mar 10 22:51:18 2019 ;
+; Design Assistant Status           ; Analyzed - Wed Apr 03 16:21:33 2019 ;
 ; Revision Name                     ; Project                             ;
 ; Top-level Entity Name             ; Project                             ;
 ; Family                            ; Cyclone V                           ;
@@ -61,12 +61,11 @@ refer to the applicable agreement for further details.
 ; Maximum allowed            ; 4           ;
 ;                            ;             ;
 ; Average used               ; 1.00        ;
-; Maximum used               ; 3           ;
+; Maximum used               ; 2           ;
 ;                            ;             ;
 ; Usage by Processor         ; % Time Used ;
 ;     Processor 1            ; 100.0%      ;
 ;     Processor 2            ;   0.0%      ;
-;     Processor 3            ;   0.0%      ;
 +----------------------------+-------------+
 
 
@@ -117,14 +116,14 @@ refer to the applicable agreement for further details.
 ; Rule name                                                                                    ; Name                                                                                        ;
 +----------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
 ; Rule C106: Clock signal source should not drive registers triggered by different clock edges ; Pll:myPll|Pll_0002:pll_inst|altera_pll:altera_pll_i|general[0].gpll~FRACTIONAL_PLL_O_VCOPH0 ;
-;  Positive edge destination node(s) list                                                      ; regval2_ID[0]~DUPLICATE                                                                     ;
 ;  Positive edge destination node(s) list                                                      ; regval2_ID[0]                                                                               ;
-;  Positive edge destination node(s) list                                                      ; regval1_ID[0]~DUPLICATE                                                                     ;
 ;  Positive edge destination node(s) list                                                      ; regval1_ID[0]                                                                               ;
+;  Positive edge destination node(s) list                                                      ; regval1_ID[0]~DUPLICATE                                                                     ;
+;  Positive edge destination node(s) list                                                      ; regval2_ID[0]~DUPLICATE                                                                     ;
 ;  Positive edge destination node(s) list                                                      ; regval1_ID[3]                                                                               ;
 ;  Positive edge destination node(s) list                                                      ; regval2_ID[3]_OTERM173                                                                      ;
-;  Positive edge destination node(s) list                                                      ; regval1_ID[2]                                                                               ;
 ;  Positive edge destination node(s) list                                                      ; regval1_ID[2]~DUPLICATE                                                                     ;
+;  Positive edge destination node(s) list                                                      ; regval1_ID[2]                                                                               ;
 ;  Positive edge destination node(s) list                                                      ; regval2_ID[2]_OTERM165                                                                      ;
 ;  Positive edge destination node(s) list                                                      ; regval2_ID[8]                                                                               ;
 ;  Negative edge destination node(s) list                                                      ; regs[7][0]                                                                                  ;
@@ -325,7 +324,7 @@ refer to the applicable agreement for further details.
 Info: *******************************************************************
 Info: Running Quartus Prime Design Assistant
     Info: Version 18.1.0 Build 625 09/12/2018 SJ Lite Edition
-    Info: Processing started: Sun Mar 10 22:51:16 2019
+    Info: Processing started: Wed Apr 03 16:21:31 2019
 Info: Command: quartus_drc Project -c Project
 Warning (18236): Number of processors has not been specified which may cause overloading on shared machines.  Set the global assignment NUM_PARALLEL_PROCESSORS in your QSF to an appropriate value for best performance.
 Info (332104): Reading SDC File: 'Project.sdc'
@@ -407,8 +406,8 @@ Info (308044): (Information) Rule T102: Top nodes with the highest number of fan
 Info (308007): Design Assistant information: finished post-fitting analysis of current design -- generated 171 information messages and 1 warning messages
 Info: Quartus Prime Design Assistant was successful. 0 errors, 3 warnings
     Info: Peak virtual memory: 4788 megabytes
-    Info: Processing ended: Sun Mar 10 22:51:18 2019
-    Info: Elapsed time: 00:00:02
+    Info: Processing ended: Wed Apr 03 16:21:34 2019
+    Info: Elapsed time: 00:00:03
     Info: Total CPU time (on all processors): 00:00:02
 
 

@@ -1,5 +1,5 @@
 Analysis & Synthesis report for Project
-Sun Mar 10 22:49:39 2019
+Wed Apr 03 16:19:54 2019
 Quartus Prime Version 18.1.0 Build 625 09/12/2018 SJ Lite Edition
 
 
@@ -62,7 +62,7 @@ refer to the applicable agreement for further details.
 +-------------------------------------------------------------------------------+
 ; Analysis & Synthesis Summary                                                  ;
 +---------------------------------+---------------------------------------------+
-; Analysis & Synthesis Status     ; Successful - Sun Mar 10 22:49:39 2019       ;
+; Analysis & Synthesis Status     ; Successful - Wed Apr 03 16:19:54 2019       ;
 ; Quartus Prime Version           ; 18.1.0 Build 625 09/12/2018 SJ Lite Edition ;
 ; Revision Name                   ; Project                                     ;
 ; Top-level Entity Name           ; Project                                     ;
@@ -1053,13 +1053,14 @@ Note: In order to hide this table in the UI and the text report file, please set
 Info: *******************************************************************
 Info: Running Quartus Prime Analysis & Synthesis
     Info: Version 18.1.0 Build 625 09/12/2018 SJ Lite Edition
-    Info: Processing started: Sun Mar 10 22:49:22 2019
+    Info: Processing started: Wed Apr 03 16:19:36 2019
 Info: Command: quartus_map --read_settings_files=on --write_settings_files=off Project -c Project
 Warning (18236): Number of processors has not been specified which may cause overloading on shared machines.  Set the global assignment NUM_PARALLEL_PROCESSORS in your QSF to an appropriate value for best performance.
 Info (20030): Parallel compilation is enabled and will use 4 of the 4 processors detected
-Info (12021): Found 2 design units, including 2 entities, in source file project.v
+Info (12021): Found 3 design units, including 3 entities, in source file project.v
     Info (12023): Found entity 1: Project File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 1
     Info (12023): Found entity 2: SXT File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 474
+    Info (12023): Found entity 3: Key File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 484
 Info (12021): Found 1 design units, including 1 entities, in source file sevenseg.v
     Info (12023): Found entity 1: SevenSeg File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/SevenSeg.v Line: 1
 Info (12021): Found 1 design units, including 1 entities, in source file pll.v
@@ -1223,10 +1224,10 @@ Info (21057): Implemented 2449 device resources after synthesis - the final reso
     Info (21064): Implemented 64 RAM segments
     Info (21065): Implemented 1 PLLs
 Info: Quartus Prime Analysis & Synthesis was successful. 0 errors, 32 warnings
-    Info: Peak virtual memory: 4891 megabytes
-    Info: Processing ended: Sun Mar 10 22:49:39 2019
-    Info: Elapsed time: 00:00:17
-    Info: Total CPU time (on all processors): 00:00:29
+    Info: Peak virtual memory: 4994 megabytes
+    Info: Processing ended: Wed Apr 03 16:19:54 2019
+    Info: Elapsed time: 00:00:18
+    Info: Total CPU time (on all processors): 00:00:30
 
 
 +------------------------------------------+

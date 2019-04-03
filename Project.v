@@ -481,3 +481,52 @@ module SXT(IN, OUT);
   assign OUT = {{(OBITS-IBITS){IN[IBITS-1]}}, IN};
 endmodule
 
+module Key(ABUS, DBUS, KEY, WE, INTR, CLK, LOCK, INIT, RESET);
+	parameter BITS;
+	parameter BASE;
+	input wire [(BITS-1):0] ABUS;
+	inout wire [(BITS-1):0] DBUS;
+	input wire [3:0] KEY;
+	input wire CLK, WE, LOCK, INIT, RESET;
+	output wire INTR;
+	
+	wire selData = (ABUS === BASE);
+	wire selCtl = (ABUS === BASE + 4);
+	reg [3:0] sample;
+	reg [3:0] KEYDATA;
+	reg [(BITS-1):0] KEYCTRL;
+	reg [3:0] clockCount;
+	always @ (posedge CLK or posedge RESET) begin 
+		if (RESET) begin
+			KEYDATA <= 4'h0;
+			KEYCTRL <= {(BITS-1){1'b0}};
+		end else begin
+			if (selData && !WE) begin
+				KEYCTRL[0] <= 0;
+			end
+			if (clockCount === 4'hF) begin
+				if (KEY === sample && KEYDATA !== sample) begin
+					KEYDATA <= sample;
+					if (KEYCTRL[0]) begin
+						KEYCTRL[1] <= 1;
+					end else begin
+						KEYCTRL[0] <= 1;
+					end
+				end
+				sample <= KEY;
+				clockCount <= 4'h0;
+			end
+			clockCount <= clockCount + 1;
+			if (WE) begin
+				if (DBUS[1] === 0) begin
+					KEYCTRL[1] <= 0;
+				end
+				KEYCTRL[4] <= DBUS[4];
+			end
+		end
+	end
+	assign DBUS = selData && !WE ? {{(BITS-4){1'b0}},KEYDATA} : 
+					  selCtl && !WE ? KEYCTRL : 
+					  {BITS{1'bz}};
+endmodule
+	
