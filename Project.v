@@ -88,7 +88,6 @@ module Project(
 
   assign reset = !locked;
 
-
   //*** FETCH STAGE ***//
   // The PC register and update logic
   wire [DBITS-1:0] pcplus_FE;
@@ -468,8 +467,19 @@ module Project(
 
   assign LEDR = LEDR_out;
   
+  // Setup and create address/data/we buses.
+  wire [(DBITS-1):0] abus;
+  wire [(DBITS-1):0] dbus;
+  wire 				   we; /* write enable */
+  
+  assign abus = memaddr_MEM_w;
+  assign we   = wr_mem_MEM_w;
+  assign dbus = wr_mem_MEM_w ? regval2_EX : {DBITS{1'bz}};
+  
+  // Attach devices
+  // TODO once devices are done with
+  
 endmodule
-
 
 module SXT(IN, OUT);
   parameter IBITS = 16;
@@ -480,6 +490,10 @@ module SXT(IN, OUT);
 
   assign OUT = {{(OBITS-IBITS){IN[IBITS-1]}}, IN};
 endmodule
+
+// =============================================================
+// I/O Devices
+// =============================================================
 
 module Key(ABUS, DBUS, KEY, WE, INTR, CLK, LOCK, INIT, RESET);
 	parameter BITS;
@@ -529,4 +543,84 @@ module Key(ABUS, DBUS, KEY, WE, INTR, CLK, LOCK, INIT, RESET);
 					  selCtl && !WE ? KEYCTRL : 
 					  {BITS{1'bz}};
 endmodule
+
+// TODO; 
+// just a clone of Key module, but increased register widths to 10 (10 switches on the DE0)
+module Switch(ABUS, DBUS, SW, WE, INTR, CLK, LOCK, INIT, RESET);
+	parameter BITS;
+	parameter BASE;
+	input wire [(BITS-1):0] ABUS;
+	inout wire [(BITS-1):0] DBUS;
+	input wire [9:0] SW;
+	input wire CLK, WE, LOCK, INIT, RESET;
+	output wire INTR;
 	
+	wire selData = (ABUS === BASE);
+	wire selCtl = (ABUS === BASE + 4);
+	reg [9:0] sample;
+	reg [9:0] SDATA;
+	reg [(BITS-1):0] SCTRL;
+	reg [3:0] clockCount;
+	always @ (posedge CLK or posedge RESET) begin 
+		if (RESET) begin
+			SDATA <= 10'h0;
+			SCTRL <= {(BITS-1){1'b0}};
+		end else begin
+			if (selData && !WE) begin
+				SCTRL[0] <= 0;
+			end
+			if (clockCount === 4'hF) begin
+				if (SW === sample && SDATA !== sample) begin
+					SDATA <= sample;
+					if (SCTRL[0]) begin
+						SCTRL[1] <= 1;
+					end else begin
+						SCTRL[0] <= 1;
+					end
+				end
+				sample <= SW;
+				clockCount <= 4'h0;
+			end
+			clockCount <= clockCount + 1;
+			if (WE) begin
+				if (DBUS[1] === 0) begin
+					SCTRL[1] <= 0;
+				end
+				SCTRL[4] <= DBUS[4];
+			end
+		end
+	end
+	assign DBUS = selData && !WE ? {{(BITS-10){1'b0}},SDATA} : 
+					  selCtl && !WE ? SCTRL : 
+					  {BITS{1'bz}};
+endmodule
+	
+// TODO
+module Timer(ABUS, DBUS, WE, INTR, CLK, LOCK, INIT);
+	parameter BITS;
+	parameter BASE;
+	
+	input wire [(BITS-1):0] ABUS;
+	inout wire [(BITS-1):0] DBUS;
+	input wire WE, CLK, LOCK, INIT;
+	output wire INTR;
+	
+	wire selData = (ABUS === BASE) || (ABUS === BASE + 4); // select TCNT/TLIM
+	wire selCtl = (ABUS === BASE + 8); // select TCTL
+	wire wrCtl = WE & selCtl;
+	wire rdCtl = (!WE) && selCtl;
+	
+	reg [(BITS - 1):0] TCNT; // current value of counter
+	reg [(BITS - 1):0] TLIM; // counter limit
+	reg [(BITS - 1):0] TCTL; // control/status reg
+	
+	/*
+	always @ (posedge CLK) begin
+		
+		
+	end
+	*/
+	
+	//assign DBUS = rdCtl ? 
+	
+endmodule
