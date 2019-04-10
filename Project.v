@@ -498,6 +498,7 @@ endmodule
 module Key(ABUS, DBUS, KEY, WE, INTR, CLK, LOCK, INIT, RESET);
 	parameter BITS;
 	parameter BASE;
+	
 	input wire [(BITS-1):0] ABUS;
 	inout wire [(BITS-1):0] DBUS;
 	input wire [3:0] KEY;
@@ -539,8 +540,8 @@ module Key(ABUS, DBUS, KEY, WE, INTR, CLK, LOCK, INIT, RESET);
 			end
 		end
 	end
-	assign DBUS = selData && !WE ? {{(BITS-4){1'b0}},KEYDATA} : 
-					  selCtl && !WE ? KEYCTRL : 
+	assign DBUS = (selData && !WE) ? {{(BITS-4){1'b0}},KEYDATA} : 
+					  (selCtl && !WE) ? KEYCTRL : 
 					  {BITS{1'bz}};
 endmodule
 
@@ -549,6 +550,7 @@ endmodule
 module Switch(ABUS, DBUS, SW, WE, INTR, CLK, LOCK, INIT, RESET);
 	parameter BITS;
 	parameter BASE;
+	
 	input wire [(BITS-1):0] ABUS;
 	inout wire [(BITS-1):0] DBUS;
 	input wire [9:0] SW;
@@ -590,37 +592,79 @@ module Switch(ABUS, DBUS, SW, WE, INTR, CLK, LOCK, INIT, RESET);
 			end
 		end
 	end
-	assign DBUS = selData && !WE ? {{(BITS-10){1'b0}},SDATA} : 
-					  selCtl && !WE ? SCTRL : 
+	assign DBUS = (selData && !WE) ? {{(BITS-10){1'b0}},SDATA} : 
+					  (selCtl && !WE) ? SCTRL : 
 					  {BITS{1'bz}};
 endmodule
 	
 // TODO
-module Timer(ABUS, DBUS, WE, INTR, CLK, LOCK, INIT);
+module Timer(ABUS, DBUS, WE, INTR, CLK, LOCK, INIT, RESET);
 	parameter BITS;
 	parameter BASE;
 	
 	input wire [(BITS-1):0] ABUS;
 	inout wire [(BITS-1):0] DBUS;
-	input wire WE, CLK, LOCK, INIT;
+	input wire WE, CLK, LOCK, INIT, RESET;
 	output wire INTR;
 	
-	wire selData = (ABUS === BASE) || (ABUS === BASE + 4); // select TCNT/TLIM
+	wire selCnt = (ABUS === BASE);
+	wire selLim = (ABUS === BASE + 4);
+	wire selData = selCnt || selLim; // select TCNT/TLIM
 	wire selCtl = (ABUS === BASE + 8); // select TCTL
-	wire wrCtl = WE & selCtl;
+	
 	wire rdCtl = (!WE) && selCtl;
+	wire rdCnt = (!WE) && selCnt;
 	
 	reg [(BITS - 1):0] TCNT; // current value of counter
 	reg [(BITS - 1):0] TLIM; // counter limit
 	reg [(BITS - 1):0] TCTL; // control/status reg
 	
-	/*
-	always @ (posedge CLK) begin
+	// increment CLK every 1ms by default
+	always @ (posedge CLK or posedge RESET) begin
+		if (RESET) begin 
+			TCNT <= {(BITS - 1){1'b0}};
+			TLIM <= {(BITS - 1){1'b0}};
+			TCTL <= {(BITS - 1){1'b0}};
+		end else begin 
+			if (selData && !WE) begin
+				TCTL[0] <= 0;
+			end
 		
+			if (WE) begin
+				if (selCnt) begin
+					TCNT <= DBUS;
+				end else if (selLim) begin
+					TLIM <= DBUS; 
+				end
+				
+				if (selCtl && DBUS == 0) begin
+					if (ABUS === BASE + 8) begin // ready bit
+						TCTL[0] <= 0;
+					end
+					
+					if (ABUS === BASE + 9) begin // overflow bit
+						TCTL[1] <= 0;
+					end
+				end
+			end
 		
+			if ((TLIM != 0) && (TCNT == TLIM - 1)) begin
+				//TCNT <= TCNT + 1; // commented out as I don't know what the purpose of doing this is.
+				TCNT <= 0;
+				TCTL[0] <= 1;
+			end else begin
+				TCNT <= TCNT + 1;
+				
+				if (TCTL[0] == 1) begin
+					TCTL[1] = 1;
+				end
+			end
+			
+		end
 	end
-	*/
 	
-	//assign DBUS = rdCtl ? 
+	assign DBUS = rdCtl ? {TCTL} :
+					  rdCnt ? {TCNT} :
+					  {BITS{1'bz}};
 	
 endmodule
