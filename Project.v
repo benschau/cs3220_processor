@@ -49,6 +49,8 @@ module Project(
   parameter OP1_ANDI = 6'b100100;
   parameter OP1_ORI  = 6'b100101;
   parameter OP1_XORI = 6'b100110;
+  /* system instruction */
+  parameter OP1_SYS  = 6'h3f;
   
   // Add parameters for secondary opcode values 
   /* OP2 */
@@ -67,6 +69,10 @@ module Project(
   parameter OP2_NXOR = 8'b00101110;
   parameter OP2_RSHF = 8'b00110000;
   parameter OP2_LSHF = 8'b00110001;
+  /* interrupt instructions */
+  parameter OP2_RETI = 8'b00000001;
+  parameter OP2_RSR  = 8'b00000010;
+  parameter OP2_WSR  = 8'b00000011;
   
   parameter HEXBITS  = 24;
   parameter LEDRBITS = 10;
@@ -207,7 +213,19 @@ module Project(
   // Among instructions which write back, Rd is target for all ALUR instructions,
   // and Rt is target for all others
   assign wregno_ID_w = (op1_ID_w === OP1_ALUR) ? rd_ID_w : rt_ID_w;
+    
+  // Check if it is a system instr
+  wire is_sys_ID_w;
+  wire is_reti_ID_w;
+  wire is_rsr_ID_w;
+  wire is_wsr_ID_w;
+  
+  assign is_sys_ID_w = (op1_ID_w === OP1_SYS);
+  assign is_reti_ID_w = is_sys_ID_w && (op2_ID_w === OP2_RETI);
+  assign is_rsr_ID_w = is_sys_ID_w && (op2_ID_w === OP2_RSR);
+  assign is_wsr_ID_w = is_sys_ID_w && (op2_ID_w === OP2_WSR);
 
+  // TODO: Add system instr reti, rsr, wsr as control sig
   assign ctrlsig_ID_w = {is_br_ID_w, is_jmp_ID_w, rd_mem_ID_w, wr_mem_ID_w, wr_reg_ID_w};
   
   // DONE: Specify stall condition
@@ -228,6 +246,7 @@ module Project(
   assign rt_mem_dep_w = chkRt && rt_ID_w === wregno_EX && ctrlsig_EX[0];
   assign stall_pipe = (rs_ex_dep_w || rt_ex_dep_w) && op1_ID === OP1_LW;
 
+  
   // ID_latch
   always @ (posedge clk or posedge reset) begin
     if(reset) begin
@@ -258,6 +277,8 @@ module Project(
         op1_ID <= op1_ID_w;
         op2_ID <= op2_ID_w;
 		  immval_ID <= sxt_imm_ID_w;
+		  
+		  // TODO: add dependency logic for system registers
 		  if (rs_ex_dep_w)
 		    regval1_ID <= aluout_EX_r;
 		  else if (rs_mem_dep_w)
@@ -299,7 +320,9 @@ module Project(
       default : br_cond_EX = 1'b0;
     endcase
   end
-
+ 
+ 
+  // TODO: add handling for OP2_RETI, OP2_RSR, OP2_WSR
   always @ (op1_ID or op2_ID or regval1_ID or regval2_ID or immval_ID) begin
     if(op1_ID == OP1_ALUR) begin
       case (op2_ID)
@@ -467,6 +490,17 @@ module Project(
   end
 
   assign LEDR = LEDR_out;
+  
+  
+  /*** Interrupt Handling ***/
+  // Special registers  
+  reg [(DBITS-1):0] PCS; // processor control & status
+								 // PCS[0] -> Interrupt Enable bit.
+								 
+  reg [(DBITS-1):0] IRA; // interrupt return address
+  reg [(DBITS-1):0] IHA; // interrupt handler address
+  reg [(DBITS-1):0] IDN; // interrupt device ID
+ 
   
   // Setup and create address/data/we buses.
   wire [(DBITS-1):0] abus;
