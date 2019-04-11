@@ -12,17 +12,18 @@ module Project(
   output [9:0] LEDR
 );
 
-  parameter DBITS    = 32;
-  parameter INSTSIZE = 32'd4;
-  parameter INSTBITS = 32;
+  parameter DBITS     = 32;
+  parameter INSTSIZE  = 32'd4;
+  parameter INSTBITS  = 32;
   parameter REGNOBITS = 4;
-  parameter REGWORDS = (1 << REGNOBITS);
-  parameter IMMBITS  = 16;
-  parameter STARTPC  = 32'h100;
-  parameter ADDRHEX  = 32'hFFFFF000;
-  parameter ADDRLEDR = 32'hFFFFF020;
-  parameter ADDRKEY  = 32'hFFFFF080;
-  parameter ADDRSW   = 32'hFFFFF090;
+  parameter REGWORDS  = (1 << REGNOBITS);
+  parameter IMMBITS   = 16;
+  parameter STARTPC   = 32'h100;
+  parameter ADDRHEX   = 32'hFFFFF000;
+  parameter ADDRLEDR  = 32'hFFFFF020;
+  parameter ADDRKEY   = 32'hFFFFF080;
+  parameter ADDRSW    = 32'hFFFFF090;
+  parameter ADDRTIMER = 32'hFFFFF100;
 
   // Change this to fmedian2.mif before submitting
   //parameter IMEMINITFILE = "Test.mif";
@@ -476,8 +477,46 @@ module Project(
   assign we   = wr_mem_MEM_w;
   assign dbus = wr_mem_MEM_w ? regval2_EX : {DBITS{1'bz}};
   
+  // TODO
+  wire [(DBITS - 1):0] intr_timer;
+  wire init;
+  wire lock;
+  
   // Attach devices
-  // TODO once devices are done with
+  // TODO do we need separate devices for HEX, LEDR?
+  // TODO modules don't use intr_timer, init, or lock.
+  Timer #(.BITS(DBITS), .BASE(ADDRTIMER)) timer(
+	 .ABUS(abus), 
+	 .DBUS(dbus),
+	 .WE(we),
+	 .INTR(intr_timer),
+	 .CLK(clk),
+	 .LOCK(lock),
+	 .INIT(init),
+	 .RESET(reset)
+  );
+  
+  Key #(.BITS(DBITS), .BASE(ADDRKEY)) key(
+	 .ABUS(abus), 
+	 .DBUS(dbus),
+	 .WE(we),
+	 .INTR(intr_timer),
+	 .CLK(clk),
+	 .LOCK(lock),
+	 .INIT(init),
+	 .RESET(reset)
+  );
+  
+  Switch #(.BITS(DBITS), .BASE(ADDRSW)) switch(
+	 .ABUS(abus), 
+	 .DBUS(dbus),
+	 .WE(we),
+	 .INTR(intr_timer),
+	 .CLK(clk),
+	 .LOCK(lock),
+	 .INIT(init),
+	 .RESET(reset)
+  );
   
 endmodule
 
