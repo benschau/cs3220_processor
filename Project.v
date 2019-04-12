@@ -94,6 +94,16 @@ module Project(
   );
 
   assign reset = !locked;
+  
+  
+  //*** Special system registers ***// 
+  reg [(DBITS-1):0] PCS; // processor control & status
+								 // PCS[0] -> Interrupt Enable bit.
+								 
+  reg [(DBITS-1):0] IRA; // interrupt return address
+  reg [(DBITS-1):0] IHA; // interrupt handler address
+  reg [(DBITS-1):0] IDN; // interrupt device ID
+ 
 
   //*** FETCH STAGE ***//
   // The PC register and update logic
@@ -171,6 +181,11 @@ module Project(
   wire [REGNOBITS-1:0] wregno_ID_w;
   wire wr_reg_EX_w;
   wire wr_reg_MEM_w;
+  // Check if it is a system instr
+  wire is_sys_ID_w;
+  wire is_reti_ID_w;
+  wire is_rsr_ID_w;
+  wire is_wsr_ID_w;
   
   // Register file
   reg [DBITS-1:0] PC_ID;
@@ -180,7 +195,7 @@ module Project(
   reg signed [DBITS-1:0] immval_ID;
   reg [OP1BITS-1:0] op1_ID;
   reg [OP2BITS-1:0] op2_ID;
-  reg [4:0] ctrlsig_ID;
+  reg [6:0] ctrlsig_ID;
   reg [REGNOBITS-1:0] wregno_ID;
   // Declared here for stall check
   reg [REGNOBITS-1:0] wregno_EX;
@@ -194,6 +209,11 @@ module Project(
   assign rd_ID_w = inst_FE[11:8];
   assign rs_ID_w = inst_FE[7:4];
   assign rt_ID_w = inst_FE[3:0];
+  
+  assign is_sys_ID_w = (op1_ID_w === OP1_SYS);
+  assign is_reti_ID_w = is_sys_ID_w && (op2_ID_w === OP2_RETI);
+  assign is_rsr_ID_w = is_sys_ID_w && (op2_ID_w === OP2_RSR);
+  assign is_wsr_ID_w = is_sys_ID_w && (op2_ID_w === OP2_WSR);
  
   // Read register values
   assign regval1_ID_w = regs[rs_ID_w];
@@ -213,20 +233,10 @@ module Project(
   // Among instructions which write back, Rd is target for all ALUR instructions,
   // and Rt is target for all others
   assign wregno_ID_w = (op1_ID_w === OP1_ALUR) ? rd_ID_w : rt_ID_w;
-    
-  // Check if it is a system instr
-  wire is_sys_ID_w;
-  wire is_reti_ID_w;
-  wire is_rsr_ID_w;
-  wire is_wsr_ID_w;
-  
-  assign is_sys_ID_w = (op1_ID_w === OP1_SYS);
-  assign is_reti_ID_w = is_sys_ID_w && (op2_ID_w === OP2_RETI);
-  assign is_rsr_ID_w = is_sys_ID_w && (op2_ID_w === OP2_RSR);
-  assign is_wsr_ID_w = is_sys_ID_w && (op2_ID_w === OP2_WSR);
 
-  // TODO: Add system instr reti, rsr, wsr as control sig
-  assign ctrlsig_ID_w = {is_br_ID_w, is_jmp_ID_w, rd_mem_ID_w, wr_mem_ID_w, wr_reg_ID_w};
+  // TODO: Add system instr reti, wsr as control sig
+  // RSR changes the value of regval2_ID.
+  assign ctrlsig_ID_w = {is_reti_ID_w, is_wsr_ID_w, is_br_ID_w, is_jmp_ID_w, rd_mem_ID_w, wr_mem_ID_w, wr_reg_ID_w};
   
   // DONE: Specify stall condition
   wire chkRt;
@@ -279,18 +289,31 @@ module Project(
 		  immval_ID <= sxt_imm_ID_w;
 		  
 		  // TODO: add dependency logic for system registers
-		  if (rs_ex_dep_w)
-		    regval1_ID <= aluout_EX_r;
-		  else if (rs_mem_dep_w)
-		    regval1_ID <= rd_mem_MEM_w ? rd_val_MEM_w : aluout_EX;
-		  else
-		    regval1_ID <= regval1_ID_w;
-		  if (rt_ex_dep_w)
-		    regval2_ID <= aluout_EX_r;
-		  else if (rt_mem_dep_w)
-		    regval2_ID <= rd_mem_MEM_w ? rd_val_MEM_w : aluout_EX;
-		  else
-			 regval2_ID <= regval2_ID_w;
+		  // temp conditional here until then, but should be integrated
+		  // into the below else block (which doesn't assume system regs)
+		  if (is_rsr_ID_w) begin
+				case (rs_ID_w) 
+					4'b0001 : regval2_ID <= IRA;
+					4'b0010 : regval2_ID <= IHA;
+					4'b0011 : regval2_ID <= IDN;
+					4'b0100 : regval2_ID <= PCS;
+				endcase
+		  end else begin
+				if (rs_ex_dep_w)
+					regval1_ID <= aluout_EX_r;
+				else if (rs_mem_dep_w)
+					regval1_ID <= rd_mem_MEM_w ? rd_val_MEM_w : aluout_EX;
+				else
+					regval1_ID <= regval1_ID_w;
+
+		      if (rt_ex_dep_w)
+		        regval2_ID <= aluout_EX_r;
+		      else if (rt_mem_dep_w)
+		        regval2_ID <= rd_mem_MEM_w ? rd_val_MEM_w : aluout_EX;
+		      else
+			     regval2_ID <= regval2_ID_w;
+		  end
+			 
         wregno_ID <= wregno_ID_w;
         ctrlsig_ID <= ctrlsig_ID_w;
       end
@@ -302,10 +325,14 @@ module Project(
 
   wire is_br_EX_w;
   wire is_jmp_EX_w;
+  
+  wire is_reti_EX_w;
+  wire is_rsr_EX_w;
+  wire is_wsr_EX_w;
 
   reg [INSTBITS-1:0] inst_EX; /* This is for debugging */
   reg br_cond_EX;
-  reg [2:0] ctrlsig_EX;
+  reg [3:0] ctrlsig_EX;
   // Note that aluout_EX_r is declared as reg, but it is output signal from combi logic
   reg signed [DBITS-1:0] aluout_EX_r;
   reg [DBITS-1:0] aluout_EX;
@@ -360,11 +387,15 @@ module Project(
   assign is_br_EX_w = ctrlsig_ID[4];
   assign is_jmp_EX_w = ctrlsig_ID[3];
   assign wr_reg_EX_w = ctrlsig_ID[0];
+  assign is_reti_EX_w = ctrlsig_ID[6];
   
   // DONE: Specify signals such as mispred_EX_w, pcgood_EX_w
-  assign mispred_EX_w = br_cond_EX || is_jmp_EX_w;
-  //assign pcgood_EX_w = is_jmp_EX_w ? (PC_ID + 4*immval_ID) : (regval1_ID + 4*immval_ID);
-  assign pcgood_EX_w = is_jmp_EX_w ? (regval1_ID + 4*immval_ID) : (PC_ID + 4*immval_ID);
+  // DONE: Modified misprediction to handle RETI.
+  assign mispred_EX_w = br_cond_EX || is_jmp_EX_w || is_reti_EX_w;
+
+  assign pcgood_EX_w = is_jmp_EX_w ? (regval1_ID + 4*immval_ID) : 
+							  is_reti_EX_w ? (IRA) : 
+							  (PC_ID + 4*immval_ID);
 
   // EX_latch
   always @ (posedge clk or posedge reset) begin
@@ -375,11 +406,15 @@ module Project(
       ctrlsig_EX <= 3'h0;
 		regval2_EX <= {DBITS{1'b0}};
     end else begin
+		if (is_reti_EX_w) begin
+			// TODO: enable IE in PCS. something something add OIE to PCS? not sure.
+		end
+	 
 		// TODO: Specify EX latches
       inst_EX    <= inst_ID;
       aluout_EX  <= aluout_EX_r;
       wregno_EX  <= wregno_ID;
-      ctrlsig_EX <= ctrlsig_ID[2:0];
+      ctrlsig_EX <= {ctrlsig_ID[5],ctrlsig_ID[2:0]};
       regval2_EX <= regval2_ID;
     end
   end
@@ -395,7 +430,7 @@ module Project(
 
   reg [INSTBITS-1:0] inst_MEM; /* This is for debugging */
   reg [DBITS-1:0] regval_MEM;  
-  reg ctrlsig_MEM;
+  reg [1:0] ctrlsig_MEM;
   // D-MEM
   (* ram_init_file = IMEMINITFILE *)
   reg [DBITS-1:0] dmem[DMEMWORDS-1:0];
@@ -424,7 +459,7 @@ module Project(
 		inst_MEM		<= inst_EX;
       regval_MEM  <= rd_mem_MEM_w ? rd_val_MEM_w : aluout_EX;
       wregno_MEM  <= wregno_EX;
-      ctrlsig_MEM <= ctrlsig_EX[0];
+      ctrlsig_MEM <= {ctrlsig_EX[3],ctrlsig_EX[0]};
     end
   end
 
@@ -433,8 +468,10 @@ module Project(
 
   wire wr_reg_WB_w; 
   // regs is already declared in the ID stage
+  wire wr_wsr_WB_w;
 
-  assign wr_reg_WB_w = ctrlsig_MEM;
+  assign wr_reg_WB_w = ctrlsig_MEM[0];
+  assign wr_wsr_WB_w = ctrlsig_MEM[1];
   
   always @ (negedge clk or posedge reset) begin
     if(reset) begin
@@ -454,8 +491,18 @@ module Project(
 		regs[13] <= {DBITS{1'b0}};
 		regs[14] <= {DBITS{1'b0}};
 		regs[15] <= {DBITS{1'b0}};
-	 end else if(wr_reg_WB_w) begin
-      regs[wregno_MEM] <= regval_MEM;
+	 end else if (wr_reg_WB_w) begin
+		if (wr_wsr_WB_w) begin
+			// interpret Sd as system register
+			case (wregno_MEM) 
+				4'b0001 : IRA <= regval_MEM;
+				4'b0010 : IHA <= regval_MEM;
+				4'b0011 : IDN <= regval_MEM;
+				4'b0100 : PCS <= regval_MEM;
+			endcase
+		end else begin
+			regs[wregno_MEM] <= regval_MEM;
+		end
 	 end
   end
   
@@ -491,16 +538,7 @@ module Project(
 
   assign LEDR = LEDR_out;
   
-  
   /*** Interrupt Handling ***/
-  // Special registers  
-  reg [(DBITS-1):0] PCS; // processor control & status
-								 // PCS[0] -> Interrupt Enable bit.
-								 
-  reg [(DBITS-1):0] IRA; // interrupt return address
-  reg [(DBITS-1):0] IHA; // interrupt handler address
-  reg [(DBITS-1):0] IDN; // interrupt device ID
- 
   
   // Setup and create address/data/we buses.
   wire [(DBITS-1):0] abus;
@@ -567,7 +605,6 @@ endmodule
 // =============================================================
 // I/O Devices
 // =============================================================
-
 module Key(ABUS, DBUS, KEY, WE, INTR, CLK, LOCK, INIT, RESET);
 	parameter BITS;
 	parameter BASE;
