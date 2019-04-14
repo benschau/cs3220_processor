@@ -194,13 +194,13 @@ def assemble(source, depth=16384, width=32, address_radix='HEX', data_radix='HEX
             if t[0] in SYS_TYPE:
                 
                 if t[0] == 'reti':
-                    bin32 = opcode + '0000000000000000'
+                    bin32 = opcode + '000000000000000000'
                 else:
                     # wsr or rsr
                     # NOTE: registers will be interpreted as system registers in the 
                     #       processor depending on wsr/rsr operands.
                     #       e.g if `wsr ira, r2`, we interpret ira as 4'b1 in the assembled file and r2 as 4'b2.
-                    #           however, we won't access r1 (4'b1) but the actual ira system register. 
+                    #           however, we won't access r1 or a0 (4'b1) but the actual ira system register. 
                     rd = regs[t[1].lower()] 
 
                     rs = regs[t[2].lower()] 
