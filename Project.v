@@ -106,10 +106,10 @@ module Project(
   reg [(DBITS-1):0] IRA; // interrupt return address
   reg [(DBITS-1):0] IHA; // interrupt handler address
   reg [(DBITS-1):0] IDN; // interrupt device ID
-	
-  always @ (posedge clock or posedge reset) begin
-		IHA = ADDRINTHANDLER;
-  end
+  
+  // Initializes IHA to ADDRINTHANDLER only on initialization.
+  // Technically, it isn't good convention, but I'm trying to avoid 
+  initial IHA = ADDRINTHANDLER;
 
   //*** FETCH STAGE ***//
   // The PC register and update logic
@@ -570,7 +570,7 @@ module Project(
   wire lock;
   
   // TODO: check requests before the last stage (for RSR) and after the normal regfile read (for WSR)
-  assign intreq = (!reset) && (PCS[0] && (intr_timer || intr_keys || intr_sws));
+  assign intreq = (!reset) && (PCS[0] && (intr_timer || intr_key || intr_sws));
   
   // Attach devices
   // TODO do we need separate devices for HEX, LEDR?
@@ -608,7 +608,7 @@ module Project(
 	 .RESET(reset)
   );
   
-  Ledr #(.BITS(DBITS), .BASE(ADDRLEDR)) switch(
+  Ledr #(.BITS(DBITS), .BASE(ADDRLEDR)) ledr(
 	 .ABUS(abus), 
 	 .DBUS(dbus),
 	 .WE(we),
@@ -620,7 +620,7 @@ module Project(
 	 .RESET(reset)
   );
   
-  Hex #(.BITS(DBITS), .BASE(ADDRHEX)) switch(
+  Hex #(.BITS(DBITS), .BASE(ADDRHEX)) hex(
 	 .ABUS(abus), 
 	 .DBUS(dbus),
 	 .WE(we),
@@ -854,7 +854,7 @@ module Ledr(ABUS, DBUS, WE, INTR, OUT, CLK, LOCK, INIT, RESET);
 	end
 	
 	assign OUT = LEDRDATA;
-	assign DBUS = selData ? LEDRDATA :
+	assign DBUS = selData ? {22'b0,LEDRDATA} :
 					  {BITS{1'bz}};
 	
 endmodule
@@ -863,14 +863,15 @@ endmodule
 // TODO
 // currently implemented as a single big hex thing.
 // Would an individual module per hex digit be better?
-module Hex(ABUS, DBUS, WE, INTR, OUTHEX5, OUTHEX4, OUTHEX3, OUTHEX2, OUTHEX1, CLK, LOCK, INIT, RESET);
+module Hex(ABUS, DBUS, WE, INTR, OUTHEX5, OUTHEX4, OUTHEX3, OUTHEX2, OUTHEX1, OUTHEX0, CLK, LOCK, INIT, RESET);
 	parameter BITS;
 	parameter BASE;
 	
 	input wire [(BITS-1):0] ABUS;
 	inout wire [(BITS-1):0] DBUS;
 	input wire WE, CLK, LOCK, INIT, RESET;
-	output wire OUTHEX5, OUTHEX4, OUTHEX3, OUTHEX2, OUTHEX1, INTR;
+	output wire OUTHEX5, OUTHEX4, OUTHEX3, OUTHEX2, OUTHEX1, OUTHEX0;
+	output wire INTR;
 	
 	reg [23:0] HEXDATA;
 	
@@ -1009,7 +1010,7 @@ module Hex(ABUS, DBUS, WE, INTR, OUTHEX5, OUTHEX4, OUTHEX3, OUTHEX2, OUTHEX1, CL
 		(HEX0 == 4'he) ? 7'b0000110 :
 		/*HEX0 == 4'hf*/ 7'b0001110 ;
   
-	assign DBUS = selData ? HEXDATA :
+	assign DBUS = selData ? {8'b0,HEXDATA} :
 					  {BITS{1'bz}};
 	
 endmodule
