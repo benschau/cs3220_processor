@@ -1,5 +1,5 @@
 Analysis & Synthesis report for Project
-Wed Apr 03 16:19:54 2019
+Mon Apr 15 21:50:36 2019
 Quartus Prime Version 18.1.0 Build 625 09/12/2018 SJ Lite Edition
 
 
@@ -25,18 +25,22 @@ Quartus Prime Version 18.1.0 Build 625 09/12/2018 SJ Lite Edition
  17. Parameter Settings for User Entity Instance: Top-level Entity: |Project
  18. Parameter Settings for User Entity Instance: Pll:myPll|Pll_0002:pll_inst|altera_pll:altera_pll_i
  19. Parameter Settings for User Entity Instance: SXT:mysxt
- 20. Parameter Settings for Inferred Entity Instance: altsyncram:dmem_rtl_0
- 21. altsyncram Parameter Settings by Entity Instance
- 22. Port Connectivity Checks: "SevenSeg:ss0"
- 23. Port Connectivity Checks: "SevenSeg:ss1"
- 24. Port Connectivity Checks: "SevenSeg:ss2"
- 25. Port Connectivity Checks: "SevenSeg:ss3"
- 26. Port Connectivity Checks: "SevenSeg:ss4"
- 27. Port Connectivity Checks: "SevenSeg:ss5"
- 28. Post-Synthesis Netlist Statistics for Top Partition
- 29. Elapsed Time Per Partition
- 30. Analysis & Synthesis Messages
- 31. Analysis & Synthesis Suppressed Messages
+ 20. Parameter Settings for User Entity Instance: Timer:timer
+ 21. Parameter Settings for User Entity Instance: Key:key
+ 22. Parameter Settings for User Entity Instance: Switch:switch
+ 23. Parameter Settings for User Entity Instance: Ledr:ledr
+ 24. Parameter Settings for User Entity Instance: Hex:hex
+ 25. Parameter Settings for Inferred Entity Instance: altsyncram:dmem_rtl_0
+ 26. altsyncram Parameter Settings by Entity Instance
+ 27. Port Connectivity Checks: "Hex:hex"
+ 28. Port Connectivity Checks: "Ledr:ledr"
+ 29. Port Connectivity Checks: "Switch:switch"
+ 30. Port Connectivity Checks: "Key:key"
+ 31. Port Connectivity Checks: "Timer:timer"
+ 32. Post-Synthesis Netlist Statistics for Top Partition
+ 33. Elapsed Time Per Partition
+ 34. Analysis & Synthesis Messages
+ 35. Analysis & Synthesis Suppressed Messages
 
 
 
@@ -62,13 +66,13 @@ refer to the applicable agreement for further details.
 +-------------------------------------------------------------------------------+
 ; Analysis & Synthesis Summary                                                  ;
 +---------------------------------+---------------------------------------------+
-; Analysis & Synthesis Status     ; Successful - Wed Apr 03 16:19:54 2019       ;
+; Analysis & Synthesis Status     ; Successful - Mon Apr 15 21:50:36 2019       ;
 ; Quartus Prime Version           ; 18.1.0 Build 625 09/12/2018 SJ Lite Edition ;
 ; Revision Name                   ; Project                                     ;
 ; Top-level Entity Name           ; Project                                     ;
 ; Family                          ; Cyclone V                                   ;
 ; Logic utilization (in ALMs)     ; N/A                                         ;
-; Total registers                 ; 969                                         ;
+; Total registers                 ; 1037                                        ;
 ; Total pins                      ; 68                                          ;
 ; Total virtual pins              ; 0                                           ;
 ; Total block memory bits         ; 524,288                                     ;
@@ -220,16 +224,16 @@ refer to the applicable agreement for further details.
 +---------------------------------------------+--------------------------------------------------------------------+
 ; Resource                                    ; Usage                                                              ;
 +---------------------------------------------+--------------------------------------------------------------------+
-; Estimate of Logic utilization (ALMs needed) ; 1195                                                               ;
+; Estimate of Logic utilization (ALMs needed) ; 1381                                                               ;
 ;                                             ;                                                                    ;
-; Combinational ALUT usage for logic          ; 1540                                                               ;
-;     -- 7 input functions                    ; 43                                                                 ;
-;     -- 6 input functions                    ; 725                                                                ;
-;     -- 5 input functions                    ; 254                                                                ;
-;     -- 4 input functions                    ; 165                                                                ;
-;     -- <=3 input functions                  ; 353                                                                ;
+; Combinational ALUT usage for logic          ; 1811                                                               ;
+;     -- 7 input functions                    ; 50                                                                 ;
+;     -- 6 input functions                    ; 825                                                                ;
+;     -- 5 input functions                    ; 226                                                                ;
+;     -- 4 input functions                    ; 233                                                                ;
+;     -- <=3 input functions                  ; 477                                                                ;
 ;                                             ;                                                                    ;
-; Dedicated logic registers                   ; 969                                                                ;
+; Dedicated logic registers                   ; 1037                                                               ;
 ;                                             ;                                                                    ;
 ; I/O pins                                    ; 68                                                                 ;
 ; Total MLAB memory bits                      ; 0                                                                  ;
@@ -241,9 +245,9 @@ refer to the applicable agreement for further details.
 ;     -- PLLs                                 ; 1                                                                  ;
 ;                                             ;                                                                    ;
 ; Maximum fan-out node                        ; Pll:myPll|Pll_0002:pll_inst|altera_pll:altera_pll_i|outclk_wire[0] ;
-; Maximum fan-out                             ; 1034                                                               ;
-; Total fan-out                               ; 12102                                                              ;
-; Average fan-out                             ; 4.47                                                               ;
+; Maximum fan-out                             ; 1102                                                               ;
+; Total fan-out                               ; 13260                                                              ;
+; Average fan-out                             ; 4.35                                                               ;
 +---------------------------------------------+--------------------------------------------------------------------+
 
 
@@ -252,19 +256,18 @@ refer to the applicable agreement for further details.
 +----------------------------------------+---------------------+---------------------------+-------------------+------------+------+--------------+----------------------------------------------------------------------------------+-----------------+--------------+
 ; Compilation Hierarchy Node             ; Combinational ALUTs ; Dedicated Logic Registers ; Block Memory Bits ; DSP Blocks ; Pins ; Virtual Pins ; Full Hierarchy Name                                                              ; Entity Name     ; Library Name ;
 +----------------------------------------+---------------------+---------------------------+-------------------+------------+------+--------------+----------------------------------------------------------------------------------+-----------------+--------------+
-; |Project                               ; 1540 (1496)         ; 969 (968)                 ; 524288            ; 0          ; 68   ; 0            ; |Project                                                                         ; Project         ; work         ;
+; |Project                               ; 1811 (1664)         ; 1037 (934)                ; 524288            ; 0          ; 68   ; 0            ; |Project                                                                         ; Project         ; work         ;
+;    |Hex:hex|                           ; 33 (33)             ; 24 (24)                   ; 0                 ; 0          ; 0    ; 0            ; |Project|Hex:hex                                                                 ; Hex             ; work         ;
+;    |Key:key|                           ; 1 (1)               ; 1 (1)                     ; 0                 ; 0          ; 0    ; 0            ; |Project|Key:key                                                                 ; Key             ; work         ;
+;    |Ledr:ledr|                         ; 3 (3)               ; 10 (10)                   ; 0                 ; 0          ; 0    ; 0            ; |Project|Ledr:ledr                                                               ; Ledr            ; work         ;
 ;    |Pll:myPll|                         ; 0 (0)               ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |Project|Pll:myPll                                                               ; Pll             ; Pll          ;
 ;       |Pll_0002:pll_inst|              ; 0 (0)               ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |Project|Pll:myPll|Pll_0002:pll_inst                                             ; Pll_0002        ; Pll          ;
 ;          |altera_pll:altera_pll_i|     ; 0 (0)               ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |Project|Pll:myPll|Pll_0002:pll_inst|altera_pll:altera_pll_i                     ; altera_pll      ; work         ;
-;    |SevenSeg:ss0|                      ; 7 (7)               ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |Project|SevenSeg:ss0                                                            ; SevenSeg        ; work         ;
-;    |SevenSeg:ss1|                      ; 7 (7)               ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |Project|SevenSeg:ss1                                                            ; SevenSeg        ; work         ;
-;    |SevenSeg:ss2|                      ; 7 (7)               ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |Project|SevenSeg:ss2                                                            ; SevenSeg        ; work         ;
-;    |SevenSeg:ss3|                      ; 7 (7)               ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |Project|SevenSeg:ss3                                                            ; SevenSeg        ; work         ;
-;    |SevenSeg:ss4|                      ; 7 (7)               ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |Project|SevenSeg:ss4                                                            ; SevenSeg        ; work         ;
-;    |SevenSeg:ss5|                      ; 7 (7)               ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |Project|SevenSeg:ss5                                                            ; SevenSeg        ; work         ;
-;    |altsyncram:dmem_rtl_0|             ; 2 (0)               ; 1 (0)                     ; 524288            ; 0          ; 0    ; 0            ; |Project|altsyncram:dmem_rtl_0                                                   ; altsyncram      ; work         ;
-;       |altsyncram_c6l1:auto_generated| ; 2 (0)               ; 1 (1)                     ; 524288            ; 0          ; 0    ; 0            ; |Project|altsyncram:dmem_rtl_0|altsyncram_c6l1:auto_generated                    ; altsyncram_c6l1 ; work         ;
-;          |decode_5la:decode2|          ; 2 (2)               ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |Project|altsyncram:dmem_rtl_0|altsyncram_c6l1:auto_generated|decode_5la:decode2 ; decode_5la      ; work         ;
+;    |Switch:switch|                     ; 0 (0)               ; 1 (1)                     ; 0                 ; 0          ; 0    ; 0            ; |Project|Switch:switch                                                           ; Switch          ; work         ;
+;    |Timer:timer|                       ; 109 (109)           ; 66 (66)                   ; 0                 ; 0          ; 0    ; 0            ; |Project|Timer:timer                                                             ; Timer           ; work         ;
+;    |altsyncram:dmem_rtl_0|             ; 1 (0)               ; 1 (0)                     ; 524288            ; 0          ; 0    ; 0            ; |Project|altsyncram:dmem_rtl_0                                                   ; altsyncram      ; work         ;
+;       |altsyncram_c6l1:auto_generated| ; 1 (0)               ; 1 (1)                     ; 524288            ; 0          ; 0    ; 0            ; |Project|altsyncram:dmem_rtl_0|altsyncram_c6l1:auto_generated                    ; altsyncram_c6l1 ; work         ;
+;          |decode_5la:decode2|          ; 1 (1)               ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |Project|altsyncram:dmem_rtl_0|altsyncram_c6l1:auto_generated|decode_5la:decode2 ; decode_5la      ; work         ;
 +----------------------------------------+---------------------+---------------------------+-------------------+------------+------+--------------+----------------------------------------------------------------------------------+-----------------+--------------+
 Note: For table entries with two numbers listed, the numbers in parentheses indicate the number of resources of the given type used by the specific entity alone. The numbers listed outside of parentheses indicate the total resources of the given type used by the specific entity and all of its sub-entities in the hierarchy.
 
@@ -287,33 +290,163 @@ Note: For table entries with two numbers listed, the numbers in parentheses indi
 +--------+--------------+---------+--------------+--------------+--------------------+-----------------+
 
 
-+---------------------------------------------------------------------------------+
-; Registers Removed During Synthesis                                              ;
-+----------------------------------------+----------------------------------------+
-; Register name                          ; Reason for Removal                     ;
-+----------------------------------------+----------------------------------------+
-; immval_ID[16..31]                      ; Merged with immval_ID[15]              ;
-; op2_ID[5]                              ; Merged with immval_ID[15]              ;
-; op2_ID[4]                              ; Merged with immval_ID[14]              ;
-; op2_ID[3]                              ; Merged with immval_ID[13]              ;
-; op2_ID[2]                              ; Merged with immval_ID[12]              ;
-; op2_ID[1]                              ; Merged with immval_ID[11]              ;
-; op2_ID[0]                              ; Merged with immval_ID[10]              ;
-; inst_FE[24]                            ; Merged with inst_FE[25]                ;
-; inst_FE[25]                            ; Stuck at GND due to stuck port data_in ;
-; op2_ID[6,7]                            ; Stuck at GND due to stuck port data_in ;
-; Total Number of Removed Registers = 26 ;                                        ;
-+----------------------------------------+----------------------------------------+
++----------------------------------------------------------------------------------+
+; Registers Removed During Synthesis                                               ;
++-----------------------------------------+----------------------------------------+
+; Register name                           ; Reason for Removal                     ;
++-----------------------------------------+----------------------------------------+
+; ctrlsig_ID[5,6]                         ; Stuck at GND due to stuck port data_in ;
+; ctrlsig_EX[3]                           ; Stuck at GND due to stuck port data_in ;
+; ctrlsig_MEM[1]                          ; Stuck at GND due to stuck port data_in ;
+; Switch:switch|sample[0..9]              ; Stuck at GND due to stuck port data_in ;
+; Switch:switch|last_sample[0..9]         ; Stuck at GND due to stuck port data_in ;
+; Key:key|sample[0..3]                    ; Stuck at GND due to stuck port data_in ;
+; Key:key|last_sample[0..3]               ; Stuck at GND due to stuck port data_in ;
+; Switch:switch|SDATA[1..9]               ; Stuck at GND due to stuck port data_in ;
+; Switch:switch|SCTRL[1]                  ; Stuck at GND due to stuck port data_in ;
+; Switch:switch|SDATA[0]                  ; Stuck at GND due to stuck port data_in ;
+; Key:key|KEYDATA[0..3]                   ; Stuck at GND due to stuck port data_in ;
+; IHA[29]                                 ; Merged with PCS[31]                    ;
+; IRA[29]                                 ; Merged with PCS[31]                    ;
+; PCS[29]                                 ; Merged with PCS[31]                    ;
+; IDN[13]                                 ; Merged with PCS[31]                    ;
+; PCS[12,20]                              ; Merged with PCS[31]                    ;
+; IRA[0,13]                               ; Merged with PCS[31]                    ;
+; IDN[21]                                 ; Merged with PCS[31]                    ;
+; PCS[5]                                  ; Merged with PCS[31]                    ;
+; IRA[18]                                 ; Merged with PCS[31]                    ;
+; IDN[5,12]                               ; Merged with PCS[31]                    ;
+; IHA[21]                                 ; Merged with PCS[31]                    ;
+; IDN[2]                                  ; Merged with PCS[31]                    ;
+; IRA[10,21]                              ; Merged with PCS[31]                    ;
+; PCS[15]                                 ; Merged with PCS[31]                    ;
+; IRA[5]                                  ; Merged with PCS[31]                    ;
+; PCS[9]                                  ; Merged with PCS[31]                    ;
+; IDN[25]                                 ; Merged with PCS[31]                    ;
+; PCS[1]                                  ; Merged with PCS[31]                    ;
+; IRA[20]                                 ; Merged with PCS[31]                    ;
+; IDN[17]                                 ; Merged with PCS[31]                    ;
+; PCS[23]                                 ; Merged with PCS[31]                    ;
+; IDN[9]                                  ; Merged with PCS[31]                    ;
+; PCS[24]                                 ; Merged with PCS[31]                    ;
+; IDN[1,16]                               ; Merged with PCS[31]                    ;
+; IHA[25]                                 ; Merged with PCS[31]                    ;
+; IRA[12]                                 ; Merged with PCS[31]                    ;
+; IHA[17]                                 ; Merged with PCS[31]                    ;
+; IDN[4]                                  ; Merged with PCS[31]                    ;
+; PCS[27]                                 ; Merged with PCS[31]                    ;
+; IHA[28]                                 ; Merged with PCS[31]                    ;
+; IRA[14,25]                              ; Merged with PCS[31]                    ;
+; PCS[18]                                 ; Merged with PCS[31]                    ;
+; IRA[1,4,8,9,17]                         ; Merged with PCS[31]                    ;
+; IHA[18]                                 ; Merged with PCS[31]                    ;
+; PCS[3,7,11,19]                          ; Merged with PCS[31]                    ;
+; IRA[30]                                 ; Merged with PCS[31]                    ;
+; IDN[27,31]                              ; Merged with PCS[31]                    ;
+; IRA[22]                                 ; Merged with PCS[31]                    ;
+; IDN[15,18,19,22,23]                     ; Merged with PCS[31]                    ;
+; PCS[26]                                 ; Merged with PCS[31]                    ;
+; IDN[7,11,14]                            ; Merged with PCS[31]                    ;
+; IRA[24]                                 ; Merged with PCS[31]                    ;
+; IDN[10]                                 ; Merged with PCS[31]                    ;
+; PCS[21]                                 ; Merged with PCS[31]                    ;
+; IHA[31]                                 ; Merged with PCS[31]                    ;
+; IDN[24]                                 ; Merged with PCS[31]                    ;
+; IHA[27]                                 ; Merged with PCS[31]                    ;
+; IDN[6]                                  ; Merged with PCS[31]                    ;
+; IHA[23]                                 ; Merged with PCS[31]                    ;
+; PCS[22]                                 ; Merged with PCS[31]                    ;
+; IHA[19]                                 ; Merged with PCS[31]                    ;
+; IDN[3,8]                                ; Merged with PCS[31]                    ;
+; IHA[30]                                 ; Merged with PCS[31]                    ;
+; IRA[16]                                 ; Merged with PCS[31]                    ;
+; PCS[17]                                 ; Merged with PCS[31]                    ;
+; IDN[0]                                  ; Merged with PCS[31]                    ;
+; IRA[31]                                 ; Merged with PCS[31]                    ;
+; IDN[20]                                 ; Merged with PCS[31]                    ;
+; IRA[27]                                 ; Merged with PCS[31]                    ;
+; IHA[22]                                 ; Merged with PCS[31]                    ;
+; IRA[23]                                 ; Merged with PCS[31]                    ;
+; IHA[24]                                 ; Merged with PCS[31]                    ;
+; IRA[19]                                 ; Merged with PCS[31]                    ;
+; IHA[20]                                 ; Merged with PCS[31]                    ;
+; IRA[6,11,15]                            ; Merged with PCS[31]                    ;
+; IHA[16]                                 ; Merged with PCS[31]                    ;
+; IRA[2,7]                                ; Merged with PCS[31]                    ;
+; IHA[26]                                 ; Merged with PCS[30]                    ;
+; PCS[8,10]                               ; Merged with PCS[30]                    ;
+; IRA[26]                                 ; Merged with PCS[30]                    ;
+; PCS[0,2,4,6,14]                         ; Merged with PCS[30]                    ;
+; IDN[28,30]                              ; Merged with PCS[30]                    ;
+; PCS[25]                                 ; Merged with PCS[30]                    ;
+; IDN[26]                                 ; Merged with PCS[30]                    ;
+; PCS[28]                                 ; Merged with PCS[30]                    ;
+; IRA[28]                                 ; Merged with PCS[30]                    ;
+; PCS[13]                                 ; Merged with PCS[30]                    ;
+; IDN[29]                                 ; Merged with PCS[30]                    ;
+; IHA[1..5,12..15]                        ; Merged with PCS[16]                    ;
+; IRA[3]                                  ; Merged with PCS[16]                    ;
+; IHA[6,7,11]                             ; Merged with PCS[16]                    ;
+; IHA[0,8,9]                              ; Merged with IHA[10]                    ;
+; PCS[30]                                 ; Merged with PCS[31]                    ;
+; IHA[10]                                 ; Merged with PCS[16]                    ;
+; immval_ID[16..31]                       ; Merged with immval_ID[15]              ;
+; op2_ID[5]                               ; Merged with immval_ID[15]              ;
+; op2_ID[4]                               ; Merged with immval_ID[14]              ;
+; op2_ID[3]                               ; Merged with immval_ID[13]              ;
+; op2_ID[2]                               ; Merged with immval_ID[12]              ;
+; op2_ID[1]                               ; Merged with immval_ID[11]              ;
+; op2_ID[0]                               ; Merged with immval_ID[10]              ;
+; Switch:switch|clockCount[0..3]          ; Lost fanout                            ;
+; Key:key|clockCount[0..3]                ; Lost fanout                            ;
+; PCS[31]                                 ; Stuck at VCC due to stuck port data_in ;
+; PCS[16]                                 ; Stuck at GND due to stuck port data_in ;
+; Switch:switch|SCTRL[0]                  ; Stuck at GND due to stuck port data_in ;
+; Key:key|KEYCTRL[0,1]                    ; Stuck at GND due to stuck port data_in ;
+; inst_FE[24]                             ; Merged with inst_FE[25]                ;
+; inst_FE[25]                             ; Stuck at GND due to stuck port data_in ;
+; op2_ID[6,7]                             ; Stuck at GND due to stuck port data_in ;
+; Total Number of Removed Registers = 212 ;                                        ;
++-----------------------------------------+----------------------------------------+
 
 
-+------------------------------------------------------------------------------------+
-; Removed Registers Triggering Further Register Optimizations                        ;
-+---------------+---------------------------+----------------------------------------+
-; Register name ; Reason for Removal        ; Registers Removed due to This Register ;
-+---------------+---------------------------+----------------------------------------+
-; inst_FE[25]   ; Stuck at GND              ; op2_ID[6], op2_ID[7]                   ;
-;               ; due to stuck port data_in ;                                        ;
-+---------------+---------------------------+----------------------------------------+
++----------------------------------------------------------------------------------------------------------------------------------------+
+; Removed Registers Triggering Further Register Optimizations                                                                            ;
++-------------------------+---------------------------+----------------------------------------------------------------------------------+
+; Register name           ; Reason for Removal        ; Registers Removed due to This Register                                           ;
++-------------------------+---------------------------+----------------------------------------------------------------------------------+
+; Switch:switch|sample[9] ; Stuck at GND              ; Switch:switch|last_sample[9], Switch:switch|SDATA[9], Switch:switch|SDATA[8],    ;
+;                         ; due to stuck port data_in ; Switch:switch|SDATA[7], Switch:switch|SDATA[6], Switch:switch|SDATA[5],          ;
+;                         ;                           ; Switch:switch|SDATA[4], Switch:switch|SDATA[3], Switch:switch|SDATA[2],          ;
+;                         ;                           ; Switch:switch|SDATA[1], Switch:switch|SCTRL[1], Switch:switch|SDATA[0],          ;
+;                         ;                           ; Switch:switch|clockCount[3], Switch:switch|clockCount[2],                        ;
+;                         ;                           ; Switch:switch|clockCount[1], Switch:switch|clockCount[0], Switch:switch|SCTRL[0] ;
+; Key:key|sample[3]       ; Stuck at GND              ; Key:key|KEYDATA[3], Key:key|KEYDATA[2], Key:key|KEYDATA[1], Key:key|KEYDATA[0],  ;
+;                         ; due to stuck port data_in ; Key:key|clockCount[3], Key:key|clockCount[2], Key:key|clockCount[1],             ;
+;                         ;                           ; Key:key|clockCount[0], Key:key|KEYCTRL[1]                                        ;
+; ctrlsig_ID[5]           ; Stuck at GND              ; ctrlsig_EX[3], ctrlsig_MEM[1], PCS[31], PCS[16]                                  ;
+;                         ; due to stuck port data_in ;                                                                                  ;
+; ctrlsig_ID[6]           ; Stuck at GND              ; inst_FE[25], op2_ID[6], op2_ID[7]                                                ;
+;                         ; due to stuck port data_in ;                                                                                  ;
+; Switch:switch|sample[8] ; Stuck at GND              ; Switch:switch|last_sample[8]                                                     ;
+;                         ; due to stuck port data_in ;                                                                                  ;
+; Switch:switch|sample[7] ; Stuck at GND              ; Switch:switch|last_sample[7]                                                     ;
+;                         ; due to stuck port data_in ;                                                                                  ;
+; Switch:switch|sample[6] ; Stuck at GND              ; Switch:switch|last_sample[6]                                                     ;
+;                         ; due to stuck port data_in ;                                                                                  ;
+; Switch:switch|sample[5] ; Stuck at GND              ; Switch:switch|last_sample[5]                                                     ;
+;                         ; due to stuck port data_in ;                                                                                  ;
+; Switch:switch|sample[4] ; Stuck at GND              ; Switch:switch|last_sample[4]                                                     ;
+;                         ; due to stuck port data_in ;                                                                                  ;
+; Switch:switch|sample[3] ; Stuck at GND              ; Switch:switch|last_sample[3]                                                     ;
+;                         ; due to stuck port data_in ;                                                                                  ;
+; Switch:switch|sample[2] ; Stuck at GND              ; Switch:switch|last_sample[2]                                                     ;
+;                         ; due to stuck port data_in ;                                                                                  ;
+; Switch:switch|sample[1] ; Stuck at GND              ; Switch:switch|last_sample[1]                                                     ;
+;                         ; due to stuck port data_in ;                                                                                  ;
+; Switch:switch|sample[0] ; Stuck at GND              ; Switch:switch|last_sample[0]                                                     ;
+;                         ; due to stuck port data_in ;                                                                                  ;
++-------------------------+---------------------------+----------------------------------------------------------------------------------+
 
 
 +------------------------------------------------------+
@@ -321,12 +454,12 @@ Note: For table entries with two numbers listed, the numbers in parentheses indi
 +----------------------------------------------+-------+
 ; Statistic                                    ; Value ;
 +----------------------------------------------+-------+
-; Total registers                              ; 969   ;
-; Number of registers using Synchronous Clear  ; 126   ;
-; Number of registers using Synchronous Load   ; 0     ;
-; Number of registers using Asynchronous Clear ; 857   ;
+; Total registers                              ; 1037  ;
+; Number of registers using Synchronous Clear  ; 37    ;
+; Number of registers using Synchronous Load   ; 33    ;
+; Number of registers using Asynchronous Clear ; 925   ;
 ; Number of registers using Asynchronous Load  ; 0     ;
-; Number of registers using Clock Enable       ; 580   ;
+; Number of registers using Clock Enable       ; 646   ;
 ; Number of registers using Preset             ; 0     ;
 +----------------------------------------------+-------+
 
@@ -336,28 +469,33 @@ Note: For table entries with two numbers listed, the numbers in parentheses indi
 +-----------------------------------------+---------+
 ; Inverted Register                       ; Fan out ;
 +-----------------------------------------+---------+
-; HEX_out[0]                              ; 7       ;
-; HEX_out[2]                              ; 7       ;
-; HEX_out[3]                              ; 7       ;
-; HEX_out[5]                              ; 7       ;
-; HEX_out[7]                              ; 7       ;
-; HEX_out[9]                              ; 7       ;
-; HEX_out[10]                             ; 7       ;
-; HEX_out[11]                             ; 7       ;
-; HEX_out[12]                             ; 7       ;
-; HEX_out[14]                             ; 7       ;
-; HEX_out[15]                             ; 7       ;
-; HEX_out[17]                             ; 7       ;
-; HEX_out[18]                             ; 7       ;
-; HEX_out[19]                             ; 7       ;
-; HEX_out[20]                             ; 7       ;
-; HEX_out[21]                             ; 7       ;
-; HEX_out[22]                             ; 7       ;
-; HEX_out[23]                             ; 7       ;
+; Hex:hex|HEXDATA[0]                      ; 2       ;
+; Hex:hex|HEXDATA[4]                      ; 2       ;
+; Hex:hex|HEXDATA[8]                      ; 2       ;
+; Hex:hex|HEXDATA[12]                     ; 2       ;
+; Hex:hex|HEXDATA[16]                     ; 2       ;
+; Hex:hex|HEXDATA[20]                     ; 2       ;
+; Hex:hex|HEXDATA[6]                      ; 1       ;
+; Hex:hex|HEXDATA[5]                      ; 1       ;
+; Hex:hex|HEXDATA[9]                      ; 1       ;
+; Hex:hex|HEXDATA[7]                      ; 1       ;
+; Hex:hex|HEXDATA[3]                      ; 1       ;
+; Hex:hex|HEXDATA[23]                     ; 1       ;
+; Hex:hex|HEXDATA[22]                     ; 1       ;
+; Hex:hex|HEXDATA[2]                      ; 1       ;
+; Hex:hex|HEXDATA[21]                     ; 1       ;
+; Hex:hex|HEXDATA[1]                      ; 1       ;
+; Hex:hex|HEXDATA[19]                     ; 1       ;
+; Hex:hex|HEXDATA[18]                     ; 1       ;
+; Hex:hex|HEXDATA[17]                     ; 1       ;
+; Hex:hex|HEXDATA[15]                     ; 1       ;
+; Hex:hex|HEXDATA[14]                     ; 1       ;
+; Hex:hex|HEXDATA[13]                     ; 1       ;
+; Hex:hex|HEXDATA[11]                     ; 1       ;
+; Hex:hex|HEXDATA[10]                     ; 1       ;
 ; dmem~1                                  ; 1       ;
-; dmem_rtl_0_bypass[30]                   ; 2       ;
-; dmem_rtl_0_bypass[29]                   ; 2       ;
-; dmem_rtl_0_bypass[38]                   ; 1       ;
+; dmem_rtl_0_bypass[30]                   ; 1       ;
+; dmem_rtl_0_bypass[29]                   ; 1       ;
 ; dmem~11                                 ; 1       ;
 ; dmem_rtl_0_bypass[50]                   ; 1       ;
 ; dmem_rtl_0_bypass[49]                   ; 1       ;
@@ -375,18 +513,6 @@ Note: For table entries with two numbers listed, the numbers in parentheses indi
 ; dmem_rtl_0_bypass[92]                   ; 1       ;
 ; dmem_rtl_0_bypass[90]                   ; 1       ;
 ; dmem_rtl_0_bypass[88]                   ; 1       ;
-; dmem_rtl_0_bypass[86]                   ; 1       ;
-; dmem_rtl_0_bypass[84]                   ; 1       ;
-; dmem_rtl_0_bypass[82]                   ; 1       ;
-; dmem_rtl_0_bypass[80]                   ; 1       ;
-; dmem_rtl_0_bypass[78]                   ; 1       ;
-; dmem_rtl_0_bypass[76]                   ; 1       ;
-; dmem_rtl_0_bypass[74]                   ; 1       ;
-; dmem_rtl_0_bypass[72]                   ; 1       ;
-; dmem_rtl_0_bypass[70]                   ; 1       ;
-; dmem_rtl_0_bypass[68]                   ; 1       ;
-; dmem_rtl_0_bypass[66]                   ; 1       ;
-; dmem_rtl_0_bypass[64]                   ; 1       ;
 ; dmem_rtl_0_bypass[62]                   ; 1       ;
 ; dmem~16                                 ; 1       ;
 ; dmem_rtl_0_bypass[60]                   ; 1       ;
@@ -401,15 +527,28 @@ Note: For table entries with two numbers listed, the numbers in parentheses indi
 ; dmem~12                                 ; 1       ;
 ; dmem_rtl_0_bypass[52]                   ; 1       ;
 ; dmem_rtl_0_bypass[51]                   ; 1       ;
+; dmem_rtl_0_bypass[86]                   ; 1       ;
+; dmem_rtl_0_bypass[84]                   ; 1       ;
+; dmem_rtl_0_bypass[74]                   ; 1       ;
+; dmem_rtl_0_bypass[72]                   ; 1       ;
+; dmem_rtl_0_bypass[82]                   ; 1       ;
+; dmem_rtl_0_bypass[80]                   ; 1       ;
+; dmem_rtl_0_bypass[78]                   ; 1       ;
+; dmem_rtl_0_bypass[76]                   ; 1       ;
+; dmem_rtl_0_bypass[70]                   ; 1       ;
+; dmem_rtl_0_bypass[68]                   ; 1       ;
+; dmem_rtl_0_bypass[66]                   ; 1       ;
+; dmem_rtl_0_bypass[64]                   ; 1       ;
 ; dmem~4                                  ; 1       ;
-; dmem_rtl_0_bypass[36]                   ; 2       ;
-; dmem_rtl_0_bypass[35]                   ; 2       ;
+; dmem_rtl_0_bypass[36]                   ; 1       ;
+; dmem_rtl_0_bypass[35]                   ; 1       ;
+; dmem_rtl_0_bypass[32]                   ; 1       ;
 ; dmem~3                                  ; 1       ;
-; dmem_rtl_0_bypass[34]                   ; 2       ;
-; dmem_rtl_0_bypass[33]                   ; 2       ;
-; dmem_rtl_0_bypass[32]                   ; 2       ;
-; PC_FE[8]                                ; 23      ;
-; Total number of inverted registers = 73 ;         ;
+; dmem_rtl_0_bypass[34]                   ; 1       ;
+; dmem_rtl_0_bypass[33]                   ; 1       ;
+; dmem_rtl_0_bypass[38]                   ; 1       ;
+; PC_FE[8]                                ; 21      ;
+; Total number of inverted registers = 79 ;         ;
 +-----------------------------------------+---------+
 
 
@@ -519,27 +658,24 @@ Note: For table entries with two numbers listed, the numbers in parentheses indi
 +--------------------+-----------+---------------+----------------------+------------------------+------------+----------------------------+
 ; Multiplexer Inputs ; Bus Width ; Baseline Area ; Area if Restructured ; Saving if Restructured ; Registered ; Example Multiplexer Output ;
 +--------------------+-----------+---------------+----------------------+------------------------+------------+----------------------------+
-; 3:1                ; 30 bits   ; 60 LEs        ; 0 LEs                ; 60 LEs                 ; Yes        ; |Project|inst_FE[2]        ;
-; 3:1                ; 4 bits    ; 8 LEs         ; 8 LEs                ; 0 LEs                  ; Yes        ; |Project|wregno_ID[3]      ;
-; 4:1                ; 29 bits   ; 58 LEs        ; 58 LEs               ; 0 LEs                  ; Yes        ; |Project|PC_FE[18]         ;
-; 19:1               ; 32 bits   ; 384 LEs       ; 384 LEs              ; 0 LEs                  ; Yes        ; |Project|regval1_ID[26]    ;
-; 19:1               ; 32 bits   ; 384 LEs       ; 384 LEs              ; 0 LEs                  ; Yes        ; |Project|regval2_ID[10]    ;
+; 3:1                ; 30 bits   ; 60 LEs        ; 0 LEs                ; 60 LEs                 ; Yes        ; |Project|inst_FE[27]       ;
+; 3:1                ; 4 bits    ; 8 LEs         ; 8 LEs                ; 0 LEs                  ; Yes        ; |Project|wregno_ID[0]      ;
+; 4:1                ; 29 bits   ; 58 LEs        ; 58 LEs               ; 0 LEs                  ; Yes        ; |Project|PC_FE[10]         ;
+; 20:1               ; 32 bits   ; 416 LEs       ; 384 LEs              ; 32 LEs                 ; Yes        ; |Project|regval1_ID[3]     ;
+; 35:1               ; 32 bits   ; 736 LEs       ; 448 LEs              ; 288 LEs                ; Yes        ; |Project|regval2_ID[15]    ;
+; 4:1                ; 8 bits    ; 16 LEs        ; 16 LEs               ; 0 LEs                  ; No         ; |Project|ShiftLeft0        ;
 ; 4:1                ; 8 bits    ; 16 LEs        ; 16 LEs               ; 0 LEs                  ; No         ; |Project|ShiftRight0       ;
 ; 4:1                ; 8 bits    ; 16 LEs        ; 16 LEs               ; 0 LEs                  ; No         ; |Project|ShiftLeft0        ;
-; 4:1                ; 8 bits    ; 16 LEs        ; 16 LEs               ; 0 LEs                  ; No         ; |Project|ShiftLeft0        ;
+; 4:1                ; 2 bits    ; 4 LEs         ; 4 LEs                ; 0 LEs                  ; No         ; |Project|ShiftLeft0        ;
 ; 4:1                ; 2 bits    ; 4 LEs         ; 4 LEs                ; 0 LEs                  ; No         ; |Project|ShiftRight0       ;
-; 4:1                ; 2 bits    ; 4 LEs         ; 4 LEs                ; 0 LEs                  ; No         ; |Project|ShiftRight0       ;
-; 4:1                ; 50 bits   ; 100 LEs       ; 100 LEs              ; 0 LEs                  ; No         ; |Project|ShiftRight0       ;
-; 16:1               ; 5 bits    ; 50 LEs        ; 40 LEs               ; 10 LEs                 ; No         ; |Project|SevenSeg:ss0|OUT  ;
-; 16:1               ; 5 bits    ; 50 LEs        ; 40 LEs               ; 10 LEs                 ; No         ; |Project|SevenSeg:ss1|OUT  ;
-; 16:1               ; 5 bits    ; 50 LEs        ; 40 LEs               ; 10 LEs                 ; No         ; |Project|SevenSeg:ss2|OUT  ;
-; 16:1               ; 5 bits    ; 50 LEs        ; 40 LEs               ; 10 LEs                 ; No         ; |Project|SevenSeg:ss3|OUT  ;
-; 16:1               ; 5 bits    ; 50 LEs        ; 40 LEs               ; 10 LEs                 ; No         ; |Project|SevenSeg:ss4|OUT  ;
-; 16:1               ; 5 bits    ; 50 LEs        ; 40 LEs               ; 10 LEs                 ; No         ; |Project|SevenSeg:ss5|OUT  ;
-; 77:1               ; 12 bits   ; 612 LEs       ; 288 LEs              ; 324 LEs                ; No         ; |Project|aluout_EX_r[25]   ;
-; 77:1               ; 12 bits   ; 612 LEs       ; 288 LEs              ; 324 LEs                ; No         ; |Project|aluout_EX_r[14]   ;
+; 4:1                ; 50 bits   ; 100 LEs       ; 100 LEs              ; 0 LEs                  ; No         ; |Project|ShiftLeft0        ;
+; 7:1                ; 14 bits   ; 56 LEs        ; 56 LEs               ; 0 LEs                  ; No         ; |Project|dbus[20]          ;
+; 7:1                ; 7 bits    ; 28 LEs        ; 28 LEs               ; 0 LEs                  ; No         ; |Project|dbus[9]           ;
+; 7:1                ; 2 bits    ; 8 LEs         ; 8 LEs                ; 0 LEs                  ; No         ; |Project|dbus[0]           ;
+; 77:1               ; 12 bits   ; 612 LEs       ; 288 LEs              ; 324 LEs                ; No         ; |Project|aluout_EX_r[27]   ;
+; 77:1               ; 12 bits   ; 612 LEs       ; 288 LEs              ; 324 LEs                ; No         ; |Project|aluout_EX_r[4]    ;
 ; 80:1               ; 4 bits    ; 212 LEs       ; 104 LEs              ; 108 LEs                ; No         ; |Project|aluout_EX_r[31]   ;
-; 80:1               ; 3 bits    ; 159 LEs       ; 78 LEs               ; 81 LEs                 ; No         ; |Project|aluout_EX_r[2]    ;
+; 80:1               ; 3 bits    ; 159 LEs       ; 78 LEs               ; 81 LEs                 ; No         ; |Project|aluout_EX_r[3]    ;
 +--------------------+-----------+---------------+----------------------+------------------------+------------+----------------------------+
 
 
@@ -568,6 +704,8 @@ Note: For table entries with two numbers listed, the numbers in parentheses indi
 ; ADDRLEDR       ; 11111111111111111111000000100000 ; Unsigned Binary     ;
 ; ADDRKEY        ; 11111111111111111111000010000000 ; Unsigned Binary     ;
 ; ADDRSW         ; 11111111111111111111000010010000 ; Unsigned Binary     ;
+; ADDRTIMER      ; 11111111111111111111000100000000 ; Unsigned Binary     ;
+; ADDRINTHANDLER ; 11111111111111110000000000000000 ; Unsigned Binary     ;
 ; IMEMINITFILE   ; fmedian2.mif                     ; String              ;
 ; IMEMADDRBITS   ; 16                               ; Signed Integer      ;
 ; IMEMWORDBITS   ; 2                                ; Signed Integer      ;
@@ -588,6 +726,7 @@ Note: For table entries with two numbers listed, the numbers in parentheses indi
 ; OP1_ANDI       ; 100100                           ; Unsigned Binary     ;
 ; OP1_ORI        ; 100101                           ; Unsigned Binary     ;
 ; OP1_XORI       ; 100110                           ; Unsigned Binary     ;
+; OP1_SYS        ; 111111                           ; Unsigned Binary     ;
 ; OP2BITS        ; 8                                ; Signed Integer      ;
 ; OP2_EQ         ; 00001000                         ; Unsigned Binary     ;
 ; OP2_LT         ; 00001001                         ; Unsigned Binary     ;
@@ -603,6 +742,9 @@ Note: For table entries with two numbers listed, the numbers in parentheses indi
 ; OP2_NXOR       ; 00101110                         ; Unsigned Binary     ;
 ; OP2_RSHF       ; 00110000                         ; Unsigned Binary     ;
 ; OP2_LSHF       ; 00110001                         ; Unsigned Binary     ;
+; OP2_RETI       ; 00000001                         ; Unsigned Binary     ;
+; OP2_RSR        ; 00000010                         ; Unsigned Binary     ;
+; OP2_WSR        ; 00000011                         ; Unsigned Binary     ;
 ; HEXBITS        ; 24                               ; Signed Integer      ;
 ; LEDRBITS       ; 10                               ; Signed Integer      ;
 ; KEYBITS        ; 4                                ; Signed Integer      ;
@@ -868,6 +1010,61 @@ Note: In order to hide this table in the UI and the text report file, please set
 Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
 
 
++---------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: Timer:timer            ;
++----------------+----------------------------------+-----------------+
+; Parameter Name ; Value                            ; Type            ;
++----------------+----------------------------------+-----------------+
+; BITS           ; 32                               ; Signed Integer  ;
+; BASE           ; 11111111111111111111000100000000 ; Unsigned Binary ;
++----------------+----------------------------------+-----------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++---------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: Key:key                ;
++----------------+----------------------------------+-----------------+
+; Parameter Name ; Value                            ; Type            ;
++----------------+----------------------------------+-----------------+
+; BITS           ; 32                               ; Signed Integer  ;
+; BASE           ; 11111111111111111111000010000000 ; Unsigned Binary ;
++----------------+----------------------------------+-----------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++---------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: Switch:switch          ;
++----------------+----------------------------------+-----------------+
+; Parameter Name ; Value                            ; Type            ;
++----------------+----------------------------------+-----------------+
+; BITS           ; 32                               ; Signed Integer  ;
+; BASE           ; 11111111111111111111000010010000 ; Unsigned Binary ;
++----------------+----------------------------------+-----------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++---------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: Ledr:ledr              ;
++----------------+----------------------------------+-----------------+
+; Parameter Name ; Value                            ; Type            ;
++----------------+----------------------------------+-----------------+
+; BITS           ; 32                               ; Signed Integer  ;
+; BASE           ; 11111111111111111111000000100000 ; Unsigned Binary ;
++----------------+----------------------------------+-----------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++---------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: Hex:hex                ;
++----------------+----------------------------------+-----------------+
+; Parameter Name ; Value                            ; Type            ;
++----------------+----------------------------------+-----------------+
+; BITS           ; 32                               ; Signed Integer  ;
+; BASE           ; 11111111111111111111000000000000 ; Unsigned Binary ;
++----------------+----------------------------------+-----------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
 +----------------------------------------------------------------------------+
 ; Parameter Settings for Inferred Entity Instance: altsyncram:dmem_rtl_0     ;
 +------------------------------------+----------------------+----------------+
@@ -949,58 +1146,58 @@ Note: In order to hide this table in the UI and the text report file, please set
 +-------------------------------------------+-----------------------+
 
 
-+------------------------------------------+
-; Port Connectivity Checks: "SevenSeg:ss0" ;
-+------+-------+----------+----------------+
-; Port ; Type  ; Severity ; Details        ;
-+------+-------+----------+----------------+
-; OFF  ; Input ; Info     ; Stuck at GND   ;
-+------+-------+----------+----------------+
++-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Port Connectivity Checks: "Hex:hex"                                                                                                                                                                 ;
++---------+--------+----------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Port    ; Type   ; Severity ; Details                                                                                                                                                               ;
++---------+--------+----------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; INTR    ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed.                                                                                   ;
+; OUTHEX5 ; Output ; Warning  ; Output or bidir port (1 bits) is smaller than the port expression (7 bits) it drives.  The 6 most-significant bit(s) in the port expression will be connected to GND. ;
+; OUTHEX4 ; Output ; Warning  ; Output or bidir port (1 bits) is smaller than the port expression (7 bits) it drives.  The 6 most-significant bit(s) in the port expression will be connected to GND. ;
+; OUTHEX3 ; Output ; Warning  ; Output or bidir port (1 bits) is smaller than the port expression (7 bits) it drives.  The 6 most-significant bit(s) in the port expression will be connected to GND. ;
+; OUTHEX2 ; Output ; Warning  ; Output or bidir port (1 bits) is smaller than the port expression (7 bits) it drives.  The 6 most-significant bit(s) in the port expression will be connected to GND. ;
+; OUTHEX1 ; Output ; Warning  ; Output or bidir port (1 bits) is smaller than the port expression (7 bits) it drives.  The 6 most-significant bit(s) in the port expression will be connected to GND. ;
+; OUTHEX0 ; Output ; Warning  ; Output or bidir port (1 bits) is smaller than the port expression (7 bits) it drives.  The 6 most-significant bit(s) in the port expression will be connected to GND. ;
++---------+--------+----------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 
 
-+------------------------------------------+
-; Port Connectivity Checks: "SevenSeg:ss1" ;
-+------+-------+----------+----------------+
-; Port ; Type  ; Severity ; Details        ;
-+------+-------+----------+----------------+
-; OFF  ; Input ; Info     ; Stuck at GND   ;
-+------+-------+----------+----------------+
++---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Port Connectivity Checks: "Ledr:ledr"                                                                                                                                                             ;
++------+--------+----------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Port ; Type   ; Severity ; Details                                                                                                                                                                ;
++------+--------+----------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; INTR ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed.                                                                                    ;
+; OUT  ; Output ; Warning  ; Output or bidir port (1 bits) is smaller than the port expression (10 bits) it drives.  The 9 most-significant bit(s) in the port expression will be connected to GND. ;
++------+--------+----------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 
 
-+------------------------------------------+
-; Port Connectivity Checks: "SevenSeg:ss2" ;
-+------+-------+----------+----------------+
-; Port ; Type  ; Severity ; Details        ;
-+------+-------+----------+----------------+
-; OFF  ; Input ; Info     ; Stuck at GND   ;
-+------+-------+----------+----------------+
++-------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Port Connectivity Checks: "Switch:switch"                                                                                                                               ;
++------+--------+----------+----------------------------------------------------------------------------------------------------------------------------------------------+
+; Port ; Type   ; Severity ; Details                                                                                                                                      ;
++------+--------+----------+----------------------------------------------------------------------------------------------------------------------------------------------+
+; INTR ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed.                                                          ;
+; SW   ; Input  ; Warning  ; Declared by entity but not connected by instance. If a default value exists, it will be used.  Otherwise, the port will be connected to GND. ;
++------+--------+----------+----------------------------------------------------------------------------------------------------------------------------------------------+
 
 
-+------------------------------------------+
-; Port Connectivity Checks: "SevenSeg:ss3" ;
-+------+-------+----------+----------------+
-; Port ; Type  ; Severity ; Details        ;
-+------+-------+----------+----------------+
-; OFF  ; Input ; Info     ; Stuck at GND   ;
-+------+-------+----------+----------------+
++-------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Port Connectivity Checks: "Key:key"                                                                                                                                     ;
++------+--------+----------+----------------------------------------------------------------------------------------------------------------------------------------------+
+; Port ; Type   ; Severity ; Details                                                                                                                                      ;
++------+--------+----------+----------------------------------------------------------------------------------------------------------------------------------------------+
+; INTR ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed.                                                          ;
+; KEY  ; Input  ; Warning  ; Declared by entity but not connected by instance. If a default value exists, it will be used.  Otherwise, the port will be connected to GND. ;
++------+--------+----------+----------------------------------------------------------------------------------------------------------------------------------------------+
 
 
-+------------------------------------------+
-; Port Connectivity Checks: "SevenSeg:ss4" ;
-+------+-------+----------+----------------+
-; Port ; Type  ; Severity ; Details        ;
-+------+-------+----------+----------------+
-; OFF  ; Input ; Info     ; Stuck at GND   ;
-+------+-------+----------+----------------+
-
-
-+------------------------------------------+
-; Port Connectivity Checks: "SevenSeg:ss5" ;
-+------+-------+----------+----------------+
-; Port ; Type  ; Severity ; Details        ;
-+------+-------+----------+----------------+
-; OFF  ; Input ; Info     ; Stuck at GND   ;
-+------+-------+----------+----------------+
++----------------------------------------------------------------------------------------------------------------+
+; Port Connectivity Checks: "Timer:timer"                                                                        ;
++------+--------+----------+-------------------------------------------------------------------------------------+
+; Port ; Type   ; Severity ; Details                                                                             ;
++------+--------+----------+-------------------------------------------------------------------------------------+
+; INTR ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed. ;
++------+--------+----------+-------------------------------------------------------------------------------------+
 
 
 +-----------------------------------------------------+
@@ -1008,33 +1205,35 @@ Note: In order to hide this table in the UI and the text report file, please set
 +-----------------------+-----------------------------+
 ; Type                  ; Count                       ;
 +-----------------------+-----------------------------+
-; arriav_ff             ; 969                         ;
-;     CLR               ; 183                         ;
-;     CLR SCLR          ; 126                         ;
+; arriav_ff             ; 1037                        ;
+;     CLR               ; 241                         ;
+;     CLR SCLR          ; 37                          ;
+;     CLR SLD           ; 33                          ;
 ;     ENA               ; 32                          ;
-;     ENA CLR           ; 548                         ;
+;     ENA CLR           ; 614                         ;
 ;     plain             ; 80                          ;
-; arriav_lcell_comb     ; 1546                        ;
-;     arith             ; 154                         ;
-;         1 data inputs ; 30                          ;
+; arriav_lcell_comb     ; 1817                        ;
+;     arith             ; 218                         ;
+;         1 data inputs ; 94                          ;
 ;         2 data inputs ; 124                         ;
-;     extend            ; 43                          ;
-;         7 data inputs ; 43                          ;
-;     normal            ; 1317                        ;
-;         1 data inputs ; 48                          ;
-;         2 data inputs ; 72                          ;
-;         3 data inputs ; 53                          ;
-;         4 data inputs ; 165                         ;
-;         5 data inputs ; 254                         ;
-;         6 data inputs ; 725                         ;
+;     extend            ; 50                          ;
+;         7 data inputs ; 50                          ;
+;     normal            ; 1517                        ;
+;         0 data inputs ; 1                           ;
+;         1 data inputs ; 53                          ;
+;         2 data inputs ; 121                         ;
+;         3 data inputs ; 58                          ;
+;         4 data inputs ; 233                         ;
+;         5 data inputs ; 226                         ;
+;         6 data inputs ; 825                         ;
 ;     shared            ; 32                          ;
 ;         2 data inputs ; 32                          ;
 ; boundary_port         ; 68                          ;
 ; generic_pll           ; 1                           ;
 ; stratixv_ram_block    ; 64                          ;
 ;                       ;                             ;
-; Max LUT depth         ; 7.10                        ;
-; Average LUT depth     ; 3.98                        ;
+; Max LUT depth         ; 8.00                        ;
+; Average LUT depth     ; 4.87                        ;
 +-----------------------+-----------------------------+
 
 
@@ -1043,7 +1242,7 @@ Note: In order to hide this table in the UI and the text report file, please set
 +----------------+--------------+
 ; Partition Name ; Elapsed Time ;
 +----------------+--------------+
-; Top            ; 00:00:06     ;
+; Top            ; 00:00:08     ;
 +----------------+--------------+
 
 
@@ -1053,14 +1252,18 @@ Note: In order to hide this table in the UI and the text report file, please set
 Info: *******************************************************************
 Info: Running Quartus Prime Analysis & Synthesis
     Info: Version 18.1.0 Build 625 09/12/2018 SJ Lite Edition
-    Info: Processing started: Wed Apr 03 16:19:36 2019
+    Info: Processing started: Mon Apr 15 21:50:16 2019
 Info: Command: quartus_map --read_settings_files=on --write_settings_files=off Project -c Project
 Warning (18236): Number of processors has not been specified which may cause overloading on shared machines.  Set the global assignment NUM_PARALLEL_PROCESSORS in your QSF to an appropriate value for best performance.
 Info (20030): Parallel compilation is enabled and will use 4 of the 4 processors detected
-Info (12021): Found 3 design units, including 3 entities, in source file project.v
+Info (12021): Found 7 design units, including 7 entities, in source file project.v
     Info (12023): Found entity 1: Project File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 1
-    Info (12023): Found entity 2: SXT File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 474
-    Info (12023): Found entity 3: Key File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 484
+    Info (12023): Found entity 2: SXT File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 642
+    Info (12023): Found entity 3: Key File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 655
+    Info (12023): Found entity 4: Switch File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 712
+    Info (12023): Found entity 5: Timer File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 764
+    Info (12023): Found entity 6: Ledr File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 836
+    Info (12023): Found entity 7: Hex File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 872
 Info (12021): Found 1 design units, including 1 entities, in source file sevenseg.v
     Info (12023): Found entity 1: SevenSeg File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/SevenSeg.v Line: 1
 Info (12021): Found 1 design units, including 1 entities, in source file pll.v
@@ -1070,15 +1273,17 @@ Info (12021): Found 1 design units, including 1 entities, in source file pll/pll
 Info (12021): Found 1 design units, including 1 entities, in source file project_test.v
     Info (12023): Found entity 1: Project_test File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project_test.v Line: 3
 Info (12127): Elaborating entity "Project" for the top level hierarchy
-Warning (10858): Verilog HDL warning at Project.v(107): object imem used but never assigned File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 107
-Warning (10036): Verilog HDL or VHDL warning at Project.v(166): object "wr_reg_EX_w" assigned a value but never read File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 166
-Warning (10036): Verilog HDL or VHDL warning at Project.v(167): object "wr_reg_MEM_w" assigned a value but never read File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 167
-Warning (10036): Verilog HDL or VHDL warning at Project.v(282): object "is_br_EX_w" assigned a value but never read File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 282
-Warning (10036): Verilog HDL or VHDL warning at Project.v(373): object "inst_MEM" assigned a value but never read File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 373
-Warning (10764): Verilog HDL warning at Project.v(319): converting signed shift amount to unsigned File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 319
-Warning (10764): Verilog HDL warning at Project.v(320): converting signed shift amount to unsigned File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 320
-Warning (10235): Verilog HDL Always Construct warning at Project.v(324): variable "PC_ID" is read inside the Always Construct but isn't in the Always Construct's Event Control File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 324
-Info (12128): Elaborating entity "Pll" for hierarchy "Pll:myPll" File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 87
+Warning (10858): Verilog HDL warning at Project.v(129): object imem used but never assigned File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 129
+Warning (10036): Verilog HDL or VHDL warning at Project.v(188): object "wr_reg_EX_w" assigned a value but never read File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 188
+Warning (10036): Verilog HDL or VHDL warning at Project.v(189): object "wr_reg_MEM_w" assigned a value but never read File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 189
+Warning (10036): Verilog HDL or VHDL warning at Project.v(332): object "is_br_EX_w" assigned a value but never read File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 332
+Warning (10036): Verilog HDL or VHDL warning at Project.v(437): object "inst_MEM" assigned a value but never read File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 437
+Warning (10036): Verilog HDL or VHDL warning at Project.v(561): object "intreq" assigned a value but never read File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 561
+Warning (10230): Verilog HDL assignment warning at Project.v(245): truncated value with size 7 to match size of target (5) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 245
+Warning (10764): Verilog HDL warning at Project.v(375): converting signed shift amount to unsigned File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 375
+Warning (10764): Verilog HDL warning at Project.v(376): converting signed shift amount to unsigned File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 376
+Warning (10235): Verilog HDL Always Construct warning at Project.v(380): variable "PC_ID" is read inside the Always Construct but isn't in the Always Construct's Event Control File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 380
+Info (12128): Elaborating entity "Pll" for hierarchy "Pll:myPll" File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 97
 Info (12128): Elaborating entity "Pll_0002" for hierarchy "Pll:myPll|Pll_0002:pll_inst" File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Pll.v Line: 20
 Info (12128): Elaborating entity "altera_pll" for hierarchy "Pll:myPll|Pll_0002:pll_inst|altera_pll:altera_pll_i" File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Pll/Pll_0002.v Line: 85
 Info (10008): Verilog HDL or VHDL information: EDA Netlist Writer cannot regroup multidimensional array "wire_to_nowhere_64" into its bus
@@ -1144,8 +1349,132 @@ Info (12133): Instantiated megafunction "Pll:myPll|Pll_0002:pll_inst|altera_pll:
     Info (12134): Parameter "duty_cycle17" = "50"
     Info (12134): Parameter "pll_type" = "General"
     Info (12134): Parameter "pll_subtype" = "General"
-Info (12128): Elaborating entity "SXT" for hierarchy "SXT:mysxt" File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 197
-Info (12128): Elaborating entity "SevenSeg" for hierarchy "SevenSeg:ss5" File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 444
+Info (12128): Elaborating entity "SXT" for hierarchy "SXT:mysxt" File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 229
+Info (12128): Elaborating entity "Timer" for hierarchy "Timer:timer" File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 587
+Warning (10240): Verilog HDL Always Construct warning at Project.v(786): inferring latch(es) for variable "TCTL", which holds its previous value in one or more paths through the always construct File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 786
+Warning (10034): Output port "INTR" at Project.v(771) has no driver File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 771
+Info (10041): Inferred latch for "TCTL[2]" at Project.v(792) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 792
+Info (10041): Inferred latch for "TCTL[3]" at Project.v(792) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 792
+Info (10041): Inferred latch for "TCTL[4]" at Project.v(792) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 792
+Info (10041): Inferred latch for "TCTL[5]" at Project.v(792) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 792
+Info (10041): Inferred latch for "TCTL[6]" at Project.v(792) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 792
+Info (10041): Inferred latch for "TCTL[7]" at Project.v(792) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 792
+Info (10041): Inferred latch for "TCTL[8]" at Project.v(792) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 792
+Info (10041): Inferred latch for "TCTL[9]" at Project.v(792) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 792
+Info (10041): Inferred latch for "TCTL[10]" at Project.v(792) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 792
+Info (10041): Inferred latch for "TCTL[11]" at Project.v(792) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 792
+Info (10041): Inferred latch for "TCTL[12]" at Project.v(792) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 792
+Info (10041): Inferred latch for "TCTL[13]" at Project.v(792) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 792
+Info (10041): Inferred latch for "TCTL[14]" at Project.v(792) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 792
+Info (10041): Inferred latch for "TCTL[15]" at Project.v(792) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 792
+Info (10041): Inferred latch for "TCTL[16]" at Project.v(792) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 792
+Info (10041): Inferred latch for "TCTL[17]" at Project.v(792) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 792
+Info (10041): Inferred latch for "TCTL[18]" at Project.v(792) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 792
+Info (10041): Inferred latch for "TCTL[19]" at Project.v(792) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 792
+Info (10041): Inferred latch for "TCTL[20]" at Project.v(792) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 792
+Info (10041): Inferred latch for "TCTL[21]" at Project.v(792) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 792
+Info (10041): Inferred latch for "TCTL[22]" at Project.v(792) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 792
+Info (10041): Inferred latch for "TCTL[23]" at Project.v(792) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 792
+Info (10041): Inferred latch for "TCTL[24]" at Project.v(792) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 792
+Info (10041): Inferred latch for "TCTL[25]" at Project.v(792) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 792
+Info (10041): Inferred latch for "TCTL[26]" at Project.v(792) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 792
+Info (10041): Inferred latch for "TCTL[27]" at Project.v(792) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 792
+Info (10041): Inferred latch for "TCTL[28]" at Project.v(792) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 792
+Info (10041): Inferred latch for "TCTL[29]" at Project.v(792) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 792
+Info (10041): Inferred latch for "TCTL[30]" at Project.v(792) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 792
+Info (10041): Inferred latch for "TCTL[31]" at Project.v(792) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 792
+Info (12128): Elaborating entity "Key" for hierarchy "Key:key" File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 598
+Warning (10230): Verilog HDL assignment warning at Project.v(696): truncated value with size 32 to match size of target (4) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 696
+Warning (10240): Verilog HDL Always Construct warning at Project.v(672): inferring latch(es) for variable "KEYCTRL", which holds its previous value in one or more paths through the always construct File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 672
+Warning (10034): Output port "INTR" at Project.v(663) has no driver File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 663
+Info (10041): Inferred latch for "KEYCTRL[2]" at Project.v(672) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 672
+Info (10041): Inferred latch for "KEYCTRL[3]" at Project.v(672) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 672
+Info (10041): Inferred latch for "KEYCTRL[5]" at Project.v(672) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 672
+Info (10041): Inferred latch for "KEYCTRL[6]" at Project.v(672) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 672
+Info (10041): Inferred latch for "KEYCTRL[7]" at Project.v(672) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 672
+Info (10041): Inferred latch for "KEYCTRL[8]" at Project.v(672) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 672
+Info (10041): Inferred latch for "KEYCTRL[9]" at Project.v(672) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 672
+Info (10041): Inferred latch for "KEYCTRL[10]" at Project.v(672) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 672
+Info (10041): Inferred latch for "KEYCTRL[11]" at Project.v(672) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 672
+Info (10041): Inferred latch for "KEYCTRL[12]" at Project.v(672) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 672
+Info (10041): Inferred latch for "KEYCTRL[13]" at Project.v(672) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 672
+Info (10041): Inferred latch for "KEYCTRL[14]" at Project.v(672) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 672
+Info (10041): Inferred latch for "KEYCTRL[15]" at Project.v(672) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 672
+Info (10041): Inferred latch for "KEYCTRL[16]" at Project.v(672) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 672
+Info (10041): Inferred latch for "KEYCTRL[17]" at Project.v(672) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 672
+Info (10041): Inferred latch for "KEYCTRL[18]" at Project.v(672) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 672
+Info (10041): Inferred latch for "KEYCTRL[19]" at Project.v(672) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 672
+Info (10041): Inferred latch for "KEYCTRL[20]" at Project.v(672) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 672
+Info (10041): Inferred latch for "KEYCTRL[21]" at Project.v(672) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 672
+Info (10041): Inferred latch for "KEYCTRL[22]" at Project.v(672) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 672
+Info (10041): Inferred latch for "KEYCTRL[23]" at Project.v(672) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 672
+Info (10041): Inferred latch for "KEYCTRL[24]" at Project.v(672) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 672
+Info (10041): Inferred latch for "KEYCTRL[25]" at Project.v(672) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 672
+Info (10041): Inferred latch for "KEYCTRL[26]" at Project.v(672) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 672
+Info (10041): Inferred latch for "KEYCTRL[27]" at Project.v(672) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 672
+Info (10041): Inferred latch for "KEYCTRL[28]" at Project.v(672) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 672
+Info (10041): Inferred latch for "KEYCTRL[29]" at Project.v(672) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 672
+Info (10041): Inferred latch for "KEYCTRL[30]" at Project.v(672) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 672
+Info (10041): Inferred latch for "KEYCTRL[31]" at Project.v(672) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 672
+Info (12128): Elaborating entity "Switch" for hierarchy "Switch:switch" File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 609
+Warning (10230): Verilog HDL assignment warning at Project.v(749): truncated value with size 32 to match size of target (4) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 749
+Warning (10240): Verilog HDL Always Construct warning at Project.v(729): inferring latch(es) for variable "SCTRL", which holds its previous value in one or more paths through the always construct File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 729
+Warning (10034): Output port "INTR" at Project.v(720) has no driver File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 720
+Info (10041): Inferred latch for "SCTRL[2]" at Project.v(729) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 729
+Info (10041): Inferred latch for "SCTRL[3]" at Project.v(729) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 729
+Info (10041): Inferred latch for "SCTRL[5]" at Project.v(729) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 729
+Info (10041): Inferred latch for "SCTRL[6]" at Project.v(729) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 729
+Info (10041): Inferred latch for "SCTRL[7]" at Project.v(729) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 729
+Info (10041): Inferred latch for "SCTRL[8]" at Project.v(729) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 729
+Info (10041): Inferred latch for "SCTRL[9]" at Project.v(729) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 729
+Info (10041): Inferred latch for "SCTRL[10]" at Project.v(729) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 729
+Info (10041): Inferred latch for "SCTRL[11]" at Project.v(729) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 729
+Info (10041): Inferred latch for "SCTRL[12]" at Project.v(729) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 729
+Info (10041): Inferred latch for "SCTRL[13]" at Project.v(729) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 729
+Info (10041): Inferred latch for "SCTRL[14]" at Project.v(729) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 729
+Info (10041): Inferred latch for "SCTRL[15]" at Project.v(729) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 729
+Info (10041): Inferred latch for "SCTRL[16]" at Project.v(729) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 729
+Info (10041): Inferred latch for "SCTRL[17]" at Project.v(729) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 729
+Info (10041): Inferred latch for "SCTRL[18]" at Project.v(729) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 729
+Info (10041): Inferred latch for "SCTRL[19]" at Project.v(729) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 729
+Info (10041): Inferred latch for "SCTRL[20]" at Project.v(729) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 729
+Info (10041): Inferred latch for "SCTRL[21]" at Project.v(729) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 729
+Info (10041): Inferred latch for "SCTRL[22]" at Project.v(729) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 729
+Info (10041): Inferred latch for "SCTRL[23]" at Project.v(729) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 729
+Info (10041): Inferred latch for "SCTRL[24]" at Project.v(729) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 729
+Info (10041): Inferred latch for "SCTRL[25]" at Project.v(729) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 729
+Info (10041): Inferred latch for "SCTRL[26]" at Project.v(729) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 729
+Info (10041): Inferred latch for "SCTRL[27]" at Project.v(729) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 729
+Info (10041): Inferred latch for "SCTRL[28]" at Project.v(729) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 729
+Info (10041): Inferred latch for "SCTRL[29]" at Project.v(729) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 729
+Info (10041): Inferred latch for "SCTRL[30]" at Project.v(729) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 729
+Info (10041): Inferred latch for "SCTRL[31]" at Project.v(729) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 729
+Info (12128): Elaborating entity "Ledr" for hierarchy "Ledr:ledr" File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 621
+Warning (10230): Verilog HDL assignment warning at Project.v(862): truncated value with size 10 to match size of target (1) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 862
+Warning (10034): Output port "INTR" at Project.v(843) has no driver File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 843
+Info (12128): Elaborating entity "Hex" for hierarchy "Hex:hex" File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 638
+Warning (10230): Verilog HDL assignment warning at Project.v(898): truncated value with size 4 to match size of target (1) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 898
+Warning (10230): Verilog HDL assignment warning at Project.v(899): truncated value with size 4 to match size of target (1) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 899
+Warning (10230): Verilog HDL assignment warning at Project.v(900): truncated value with size 4 to match size of target (1) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 900
+Warning (10230): Verilog HDL assignment warning at Project.v(901): truncated value with size 4 to match size of target (1) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 901
+Warning (10230): Verilog HDL assignment warning at Project.v(902): truncated value with size 4 to match size of target (1) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 902
+Warning (10230): Verilog HDL assignment warning at Project.v(903): truncated value with size 4 to match size of target (1) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 903
+Warning (10230): Verilog HDL assignment warning at Project.v(905): truncated value with size 7 to match size of target (1) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 905
+Warning (10230): Verilog HDL assignment warning at Project.v(924): truncated value with size 7 to match size of target (1) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 924
+Warning (10230): Verilog HDL assignment warning at Project.v(943): truncated value with size 7 to match size of target (1) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 943
+Warning (10230): Verilog HDL assignment warning at Project.v(962): truncated value with size 7 to match size of target (1) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 962
+Warning (10230): Verilog HDL assignment warning at Project.v(981): truncated value with size 7 to match size of target (1) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 981
+Warning (10230): Verilog HDL assignment warning at Project.v(1000): truncated value with size 7 to match size of target (1) File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 1000
+Warning (10034): Output port "INTR" at Project.v(880) has no driver File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 880
+Warning (12011): Net is missing source, defaulting to GND
+    Warning (12110): Net "init" is missing source, defaulting to GND File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 569
+    Warning (12110): Net "lock" is missing source, defaulting to GND File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 570
+Warning (12011): Net is missing source, defaulting to GND
+    Warning (12110): Net "init" is missing source, defaulting to GND File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 569
+    Warning (12110): Net "lock" is missing source, defaulting to GND File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 570
+Warning (12011): Net is missing source, defaulting to GND
+    Warning (12110): Net "init" is missing source, defaulting to GND File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 569
+    Warning (12110): Net "lock" is missing source, defaulting to GND File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 570
 Warning (113031): 192 out of 16384 addresses are reinitialized. The latest initialized data will replace the existing data. There are 192 warnings found, and 10 warnings are reported. File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/fmedian2.mif Line: 1
     Warning (113030): Memory Initialization File address 64 is reinitialized File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/ Line: 8
     Warning (113030): Memory Initialization File address 65 is reinitialized File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/ Line: 9
@@ -1159,7 +1488,40 @@ Warning (113031): 192 out of 16384 addresses are reinitialized. The latest initi
     Warning (113030): Memory Initialization File address 73 is reinitialized File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/ Line: 17
 Warning (276020): Inferred RAM node "dmem_rtl_0" from synchronous design logic.  Pass-through logic has been added to match the read-during-write behavior of the original design.
 Info (276014): Found 1 instances of uninferred RAM logic
-    Info (276007): RAM logic "imem" is uninferred due to asynchronous read logic File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 107
+    Info (276007): RAM logic "imem" is uninferred due to asynchronous read logic File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 129
+Warning (13046): Tri-state node(s) do not directly drive top-level pin(s)
+    Warning (13048): Converted tri-state node "dbus[31]" into a selector File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 803
+    Warning (13048): Converted tri-state node "dbus[30]" into a selector File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 803
+    Warning (13048): Converted tri-state node "dbus[29]" into a selector File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 803
+    Warning (13048): Converted tri-state node "dbus[28]" into a selector File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 803
+    Warning (13048): Converted tri-state node "dbus[27]" into a selector File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 803
+    Warning (13048): Converted tri-state node "dbus[26]" into a selector File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 803
+    Warning (13048): Converted tri-state node "dbus[25]" into a selector File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 803
+    Warning (13048): Converted tri-state node "dbus[24]" into a selector File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 803
+    Warning (13048): Converted tri-state node "dbus[23]" into a selector File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 891
+    Warning (13048): Converted tri-state node "dbus[22]" into a selector File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 891
+    Warning (13048): Converted tri-state node "dbus[21]" into a selector File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 891
+    Warning (13048): Converted tri-state node "dbus[20]" into a selector File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 891
+    Warning (13048): Converted tri-state node "dbus[19]" into a selector File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 891
+    Warning (13048): Converted tri-state node "dbus[18]" into a selector File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 891
+    Warning (13048): Converted tri-state node "dbus[17]" into a selector File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 891
+    Warning (13048): Converted tri-state node "dbus[16]" into a selector File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 891
+    Warning (13048): Converted tri-state node "dbus[15]" into a selector File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 891
+    Warning (13048): Converted tri-state node "dbus[14]" into a selector File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 891
+    Warning (13048): Converted tri-state node "dbus[13]" into a selector File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 891
+    Warning (13048): Converted tri-state node "dbus[12]" into a selector File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 891
+    Warning (13048): Converted tri-state node "dbus[11]" into a selector File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 891
+    Warning (13048): Converted tri-state node "dbus[10]" into a selector File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 891
+    Warning (13048): Converted tri-state node "dbus[9]" into a selector File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 891
+    Warning (13048): Converted tri-state node "dbus[8]" into a selector File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 891
+    Warning (13048): Converted tri-state node "dbus[7]" into a selector File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 891
+    Warning (13048): Converted tri-state node "dbus[6]" into a selector File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 891
+    Warning (13048): Converted tri-state node "dbus[5]" into a selector File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 891
+    Warning (13048): Converted tri-state node "dbus[4]" into a selector File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 891
+    Warning (13048): Converted tri-state node "dbus[3]" into a selector File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 891
+    Warning (13048): Converted tri-state node "dbus[2]" into a selector File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 891
+    Warning (13048): Converted tri-state node "dbus[1]" into a selector File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 891
+    Warning (13048): Converted tri-state node "dbus[0]" into a selector File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 891
 Info (19000): Inferred 1 megafunctions from design logic
     Info (276029): Inferred altsyncram megafunction from the following design logic: "dmem_rtl_0" 
         Info (286033): Parameter OPERATION_MODE set to DUAL_PORT
@@ -1202,7 +1564,55 @@ Info (12021): Found 1 design units, including 1 entities, in source file db/deco
     Info (12023): Found entity 1: decode_u0a File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/db/decode_u0a.tdf Line: 22
 Info (12021): Found 1 design units, including 1 entities, in source file db/mux_2hb.tdf
     Info (12023): Found entity 1: mux_2hb File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/db/mux_2hb.tdf Line: 22
+Warning (12241): 4 hierarchies have connectivity warnings - see the Connectivity Checks report folder
+Warning (13024): Output pins are stuck at VCC or GND
+    Warning (13410): Pin "HEX0[1]" is stuck at GND File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 6
+    Warning (13410): Pin "HEX0[2]" is stuck at GND File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 6
+    Warning (13410): Pin "HEX0[3]" is stuck at GND File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 6
+    Warning (13410): Pin "HEX0[4]" is stuck at GND File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 6
+    Warning (13410): Pin "HEX0[5]" is stuck at GND File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 6
+    Warning (13410): Pin "HEX0[6]" is stuck at GND File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 6
+    Warning (13410): Pin "HEX1[1]" is stuck at GND File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 7
+    Warning (13410): Pin "HEX1[2]" is stuck at GND File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 7
+    Warning (13410): Pin "HEX1[3]" is stuck at GND File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 7
+    Warning (13410): Pin "HEX1[4]" is stuck at GND File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 7
+    Warning (13410): Pin "HEX1[5]" is stuck at GND File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 7
+    Warning (13410): Pin "HEX1[6]" is stuck at GND File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 7
+    Warning (13410): Pin "HEX2[1]" is stuck at GND File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 8
+    Warning (13410): Pin "HEX2[2]" is stuck at GND File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 8
+    Warning (13410): Pin "HEX2[3]" is stuck at GND File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 8
+    Warning (13410): Pin "HEX2[4]" is stuck at GND File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 8
+    Warning (13410): Pin "HEX2[5]" is stuck at GND File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 8
+    Warning (13410): Pin "HEX2[6]" is stuck at GND File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 8
+    Warning (13410): Pin "HEX3[1]" is stuck at GND File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 9
+    Warning (13410): Pin "HEX3[2]" is stuck at GND File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 9
+    Warning (13410): Pin "HEX3[3]" is stuck at GND File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 9
+    Warning (13410): Pin "HEX3[4]" is stuck at GND File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 9
+    Warning (13410): Pin "HEX3[5]" is stuck at GND File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 9
+    Warning (13410): Pin "HEX3[6]" is stuck at GND File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 9
+    Warning (13410): Pin "HEX4[1]" is stuck at GND File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 10
+    Warning (13410): Pin "HEX4[2]" is stuck at GND File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 10
+    Warning (13410): Pin "HEX4[3]" is stuck at GND File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 10
+    Warning (13410): Pin "HEX4[4]" is stuck at GND File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 10
+    Warning (13410): Pin "HEX4[5]" is stuck at GND File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 10
+    Warning (13410): Pin "HEX4[6]" is stuck at GND File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 10
+    Warning (13410): Pin "HEX5[1]" is stuck at GND File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 11
+    Warning (13410): Pin "HEX5[2]" is stuck at GND File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 11
+    Warning (13410): Pin "HEX5[3]" is stuck at GND File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 11
+    Warning (13410): Pin "HEX5[4]" is stuck at GND File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 11
+    Warning (13410): Pin "HEX5[5]" is stuck at GND File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 11
+    Warning (13410): Pin "HEX5[6]" is stuck at GND File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 11
+    Warning (13410): Pin "LEDR[1]" is stuck at GND File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 13
+    Warning (13410): Pin "LEDR[2]" is stuck at GND File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 13
+    Warning (13410): Pin "LEDR[3]" is stuck at GND File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 13
+    Warning (13410): Pin "LEDR[4]" is stuck at GND File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 13
+    Warning (13410): Pin "LEDR[5]" is stuck at GND File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 13
+    Warning (13410): Pin "LEDR[6]" is stuck at GND File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 13
+    Warning (13410): Pin "LEDR[7]" is stuck at GND File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 13
+    Warning (13410): Pin "LEDR[8]" is stuck at GND File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 13
+    Warning (13410): Pin "LEDR[9]" is stuck at GND File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 13
 Info (286030): Timing-Driven Synthesis is running
+Info (17049): 8 registers lost all their fanouts during netlist optimizations.
 Info (144001): Generated suppressed messages file C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.map.smsg
 Info (16010): Generating hard_block partition "hard_block:auto_generated_inst"
     Info (16011): Adding 5 node(s), including 0 DDIO, 1 PLL, 0 transceiver and 0 LCELL
@@ -1217,17 +1627,17 @@ Warning (21074): Design contains 10 input pin(s) that do not drive logic
     Warning (15610): No output dependent on input pin "SW[7]" File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 5
     Warning (15610): No output dependent on input pin "SW[8]" File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 5
     Warning (15610): No output dependent on input pin "SW[9]" File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 5
-Info (21057): Implemented 2449 device resources after synthesis - the final resource count might be different
+Info (21057): Implemented 2708 device resources after synthesis - the final resource count might be different
     Info (21058): Implemented 16 input pins
     Info (21059): Implemented 52 output pins
-    Info (21061): Implemented 2316 logic cells
+    Info (21061): Implemented 2575 logic cells
     Info (21064): Implemented 64 RAM segments
     Info (21065): Implemented 1 PLLs
-Info: Quartus Prime Analysis & Synthesis was successful. 0 errors, 32 warnings
-    Info: Peak virtual memory: 4994 megabytes
-    Info: Processing ended: Wed Apr 03 16:19:54 2019
-    Info: Elapsed time: 00:00:18
-    Info: Total CPU time (on all processors): 00:00:30
+Info: Quartus Prime Analysis & Synthesis was successful. 0 errors, 146 warnings
+    Info: Peak virtual memory: 4997 megabytes
+    Info: Processing ended: Mon Apr 15 21:50:36 2019
+    Info: Elapsed time: 00:00:20
+    Info: Total CPU time (on all processors): 00:00:33
 
 
 +------------------------------------------+

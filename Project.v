@@ -665,6 +665,7 @@ module Key(ABUS, DBUS, KEY, WE, INTR, CLK, LOCK, INIT, RESET);
 	wire selData = (ABUS === BASE);
 	wire selCtl = (ABUS === BASE + 4);
 	reg [3:0] sample;
+	reg [3:0] last_sample;
 	reg [3:0] KEYDATA;
 	reg [(BITS-1):0] KEYCTRL;
 	reg [3:0] clockCount;
@@ -672,12 +673,15 @@ module Key(ABUS, DBUS, KEY, WE, INTR, CLK, LOCK, INIT, RESET);
 		if (RESET) begin
 			KEYDATA <= 4'h0;
 			KEYCTRL <= {(BITS-1){1'b0}};
+			last_sample <= 4'h0;
+			sample <= 4'h0;
+			clockCount <= 4'h0;
 		end else begin
 			if (selData && !WE) begin
 				KEYCTRL[0] <= 0;
 			end
 			if (clockCount === 4'hF) begin
-				if (KEY === sample && KEYDATA !== sample) begin
+				if (last_sample === sample && KEYDATA !== sample) begin
 					KEYDATA <= sample;
 					if (KEYCTRL[0]) begin
 						KEYCTRL[1] <= 1;
@@ -686,6 +690,7 @@ module Key(ABUS, DBUS, KEY, WE, INTR, CLK, LOCK, INIT, RESET);
 					end
 				end
 				sample <= KEY;
+				last_sample <= sample;
 				clockCount <= 4'h0;
 			end
 			clockCount <= clockCount + 1;
@@ -717,6 +722,7 @@ module Switch(ABUS, DBUS, SW, WE, INTR, CLK, LOCK, INIT, RESET);
 	wire selData = (ABUS === BASE);
 	wire selCtl = (ABUS === BASE + 4);
 	reg [9:0] sample;
+	reg [9:0] last_sample;
 	reg [9:0] SDATA;
 	reg [(BITS-1):0] SCTRL;
 	reg [3:0] clockCount;
@@ -724,20 +730,20 @@ module Switch(ABUS, DBUS, SW, WE, INTR, CLK, LOCK, INIT, RESET);
 		if (RESET) begin
 			SDATA <= 10'h0;
 			SCTRL <= {(BITS-1){1'b0}};
+			sample <= 10'h0;
+			last_sample <= 10'h0;
+			clockCount <= 4'h0;
 		end else begin
 			if (selData && !WE) begin
 				SCTRL[0] <= 0;
 			end
 			if (clockCount === 4'hF) begin
-				if (SW === sample && SDATA !== sample) begin
+				if (last_sample === sample && SDATA !== sample) begin
 					SDATA <= sample;
-					if (SCTRL[0]) begin
-						SCTRL[1] <= 1;
-					end else begin
-						SCTRL[0] <= 1;
-					end
+					SCTRL[0] <= 1;
 				end
 				sample <= SW;
+				last_sample <= sample;
 				clockCount <= 4'h0;
 			end
 			clockCount <= clockCount + 1;
