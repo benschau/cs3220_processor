@@ -61,10 +61,11 @@
     IntHandler:
     ; save general purpose registers to the (system) stack
     ; TODO: which registers to save? 
-    ADDI SSP,SSP,-12
+    ADDI SSP,SSP,-16
     SW A0,0(SSP)
     SW A1,4(SSP)
     SW A2,8(SSP)
+    SW A3,12(SSP)
 
     RSR     A0,IDN ; Get cause of Interrupt
 
@@ -86,57 +87,69 @@
         ADDI    Zero,A1,Counter
         LW      A0,0(A1)
 
-        ADDI    Zero,A2,Zero
-        BEQ     A1,A2,State0
-        ADDI    Zero,A2,2
-        BEQ     A1,A2,State2
-        ADDI    Zero,A2,4
-        BEQ     A1,A2,State4
-        ADDI    Zero,A2,6
-        BEQ     A1,A2,State6
-        ADDI    Zero,A2,8
-        BEQ     A1,A2,State8
-        ADDI    Zero,A2,10
-        BEQ     A1,A2,State10
-        ADDI    Zero,A2,12
-        BEQ     A1,A2,State12
-        ADDI    Zero,A2,13
-        BEQ     A1,A2,State13
-        ADDI    Zero,A2,14
-        BEQ     A1,A2,State14
-        ADDI    Zero,A2,15
-        BEQ     A1,A2,State15
-        ADDI    Zero,A2,16
-        BEQ     A1,A2,State16
+        ; Check if counter is 18 or above:
         ADDI    Zero,A2,17
-        BEQ     A1,A2,State17
+        BGT     A0,A2,ResetCounter      ; Check if current counter > 17
+        BR      StateMachine
 
-        ; A state in which no LEDs are done.
-        BR      EmptyState
+        ResetCounter:
+            ADDI    Zero,A2,0           ; A2 <= 0
+            ADDI    Zero,A0,Counter     ; A0 <= Counter 
+            SW      A2,0(A0)            ; Counter <= 0
+            ADDI    Zero,A1,0           ; A1 (Former counter contents) <= 0
 
-        State0:
-        State2:
-        State4:
-        State12:
-        State14:
-        State16:
-            ADDI    Zero,A1,UpperHalf
-            SW      A1,LEDR(Zero)
-            BR      TimerCleanup
+        StateMachine:
+            ADDI    Zero,A2,Zero
+            BEQ     A1,A2,State0
+            ADDI    Zero,A2,2
+            BEQ     A1,A2,State2
+            ADDI    Zero,A2,4
+            BEQ     A1,A2,State4
+            ADDI    Zero,A2,6
+            BEQ     A1,A2,State6
+            ADDI    Zero,A2,8
+            BEQ     A1,A2,State8
+            ADDI    Zero,A2,10
+            BEQ     A1,A2,State10
+            ADDI    Zero,A2,12
+            BEQ     A1,A2,State12
+            ADDI    Zero,A2,13
+            BEQ     A1,A2,State13
+            ADDI    Zero,A2,14
+            BEQ     A1,A2,State14
+            ADDI    Zero,A2,15
+            BEQ     A1,A2,State15
+            ADDI    Zero,A2,16
+            BEQ     A1,A2,State16
+            ADDI    Zero,A2,17
+            BEQ     A1,A2,State17
 
-        State6:
-        State8:
-        State10:
-        State13:
-        State15:
-        State17:
-            ADDI    Zero,A1,LowerHalf
-            SW      A1,LEDR(Zero)
-            BR      TimerCleanup
+            ; A state in which no LEDs are done.
+            BR      EmptyState
 
-        EmptyState:
-            SW      Zero,LEDR(Zero)
-            BR      TimerCleanup
+            State0:
+            State2:
+            State4:
+            State12:
+            State14:
+            State16:
+                ADDI    Zero,A1,UpperHalf
+                SW      A1,LEDR(Zero)
+                BR      TimerCleanup
+
+            State6:
+            State8:
+            State10:
+            State13:
+            State15:
+            State17:
+                ADDI    Zero,A1,LowerHalf
+                SW      A1,LEDR(Zero)
+                BR      TimerCleanup
+
+            EmptyState:
+                SW      Zero,LEDR(Zero)
+                BR      TimerCleanup
 
         TimerCleanup:
             ; Increment the counter by one, re-store in the same place.
@@ -187,10 +200,28 @@
         
         ; TODO: Do I need to check SWCTRL here first for the ready bit?
 
-        LW      A0,SW(Zero)                     
-    
-        ; TODO: Fill this out. 
+        LW      A0,SW(Zero)                     ; A0 <= SWDATA
+        ORI     A0,A0,1                         ; Force SW[0] to always be on so HEX[0] is always on.
 
+        ADDI    Zero,A2,0                       ; A2 <= hex contents, [23:0]
+        ADDI    Zero,A1,0                       ; A1 <= extract the on switches from A0.
+        DisplayHexLoop:
+            ADDI   Zero,A3,4                    ; A3 <= shift amount
+            LSHF   A2,A2,A3                     ; A2 <= A2 << 4 
+
+            ; A0[0] is 1, we OR StateSpeed. Otherwise, we just skip downward.
+            ANDI   A0,A1,1                      ; Check SW[0]
+            RSHF   A0,A0,1                      ; A0 <= A0 << 1
+
+            ADDI   Zero,A3,1                    ; A3 <= 1
+            BNE    A1,A3,NextHex                ; A1 != A3 (SW[0] != 1)
+
+            ORI    A2,A2,StateSpeed             ; Put StateSpeed into the new place we've made for it. 
+            
+            NextHex:
+                BNE     A0,Zero,DisplayHexLoop      ; A0 != 0, continue to loop to fill A2.
+
+        SW      A2,HEX(Zero)                    ; Store the hex contents into HEX.
 
         BR      IntHandlerCleanup
 
@@ -200,7 +231,8 @@
         LW      A0,0(SSP)
         LW      A1,4(SSP)
         LW      A2,8(SSP)
-        ADDI    SSP,SSP,12
+        LW      A3,12(SSP)
+        ADDI    SSP,SSP,16
 
         ; Return, enable interrupts
         RETI
