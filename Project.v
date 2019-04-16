@@ -693,6 +693,8 @@ module Key(ABUS, DBUS, KEY, WE, INTR, CLK, LOCK, INIT, RESET);
 			end
 		end
 	end
+	
+	assign INTR = KEYCTRL[0];
 	assign DBUS = (selData && !WE) ? {{(BITS-4){1'b0}},KEYDATA} : 
 					  (selCtl && !WE) ? KEYCTRL : 
 					  {BITS{1'bz}};
@@ -746,6 +748,8 @@ module Switch(ABUS, DBUS, SW, WE, INTR, CLK, LOCK, INIT, RESET);
 			end
 		end
 	end
+	
+	assign INTR = SCTRL[0];
 	assign DBUS = (selData && !WE) ? {{(BITS-10){1'b0}},SDATA} : 
 					  (selCtl && !WE) ? SCTRL : 
 					  {BITS{1'bz}};
@@ -817,6 +821,7 @@ module Timer(ABUS, DBUS, WE, INTR, CLK, LOCK, INIT, RESET);
 		end
 	end
 	
+	assign INTR = TCTL[0];
 	assign DBUS = rdCtl ? {TCTL} :
 					  rdCnt ? {TCNT} :
 					  {BITS{1'bz}};
@@ -831,15 +836,16 @@ module Ledr(ABUS, DBUS, WE, OUT, CLK, LOCK, INIT, RESET);
 	input wire [(BITS-1):0] ABUS;
 	inout wire [(BITS-1):0] DBUS;
 	input wire WE, CLK, LOCK, INIT, RESET;
-	output wire OUT;
+	output wire [9:0] OUT;
 	
 	reg [9:0] LEDRDATA;
 	
 	wire selData = (ABUS === BASE);
+	wire rdData = (!WE) && selData; 
 	
 	always @ (posedge CLK or posedge RESET) begin
 		if (RESET) begin
-			LEDRDATA <= 10'b0;
+			LEDRDATA <= 10'd0;
 		end else begin
 			
 			if (WE && selData) begin
@@ -851,7 +857,7 @@ module Ledr(ABUS, DBUS, WE, OUT, CLK, LOCK, INIT, RESET);
 	end
 	
 	assign OUT = LEDRDATA;
-	assign DBUS = selData ? {22'b0,LEDRDATA} :
+	assign DBUS = rdData ? {22'b0,LEDRDATA} :
 					  {BITS{1'bz}};
 	
 endmodule
@@ -867,15 +873,16 @@ module Hex(ABUS, DBUS, WE, OUTHEX5, OUTHEX4, OUTHEX3, OUTHEX2, OUTHEX1, OUTHEX0,
 	input wire [(BITS-1):0] ABUS;
 	inout wire [(BITS-1):0] DBUS;
 	input wire WE, CLK, LOCK, INIT, RESET;
-	output wire OUTHEX5, OUTHEX4, OUTHEX3, OUTHEX2, OUTHEX1, OUTHEX0;
+	output wire [7:0] OUTHEX5, OUTHEX4, OUTHEX3, OUTHEX2, OUTHEX1, OUTHEX0;
 	
 	reg [23:0] HEXDATA;
 	
 	wire selData = (ABUS === BASE);
+	wire rdData = (!WE) && selData; 
 	
 	always @ (posedge CLK or posedge RESET) begin
 		if (RESET) begin
-			HEXDATA <= 24'hFFFFFF;
+			HEXDATA <= 24'hFEDEAD;
 		end else begin
 		
 			if (WE && selData) begin
@@ -885,12 +892,12 @@ module Hex(ABUS, DBUS, WE, OUTHEX5, OUTHEX4, OUTHEX3, OUTHEX2, OUTHEX1, OUTHEX0,
 		end
 	end
 	
-	wire HEX5 = HEXDATA[23:20];
-	wire HEX4 = HEXDATA[19:16];
-	wire HEX3 = HEXDATA[15:12];
-	wire HEX2 = HEXDATA[11:8];
-	wire HEX1 = HEXDATA[7:4];
-	wire HEX0 = HEXDATA[3:0];
+	wire [3:0] HEX5 = HEXDATA[23:20];
+	wire [3:0] HEX4 = HEXDATA[19:16];
+	wire [3:0] HEX3 = HEXDATA[15:12];
+	wire [3:0] HEX2 = HEXDATA[11:8];
+	wire [3:0] HEX1 = HEXDATA[7:4];
+	wire [3:0] HEX0 = HEXDATA[3:0];
 	
 	assign OUTHEX5 =
 		(1'b0)         ? 7'b1111111 : /* IN == OFF */
@@ -1006,7 +1013,7 @@ module Hex(ABUS, DBUS, WE, OUTHEX5, OUTHEX4, OUTHEX3, OUTHEX2, OUTHEX1, OUTHEX0,
 		(HEX0 == 4'he) ? 7'b0000110 :
 		/*HEX0 == 4'hf*/ 7'b0001110 ;
   
-	assign DBUS = selData ? {8'b0,HEXDATA} :
+	assign DBUS = rdData ? {8'b0,HEXDATA} :
 					  {BITS{1'bz}};
 	
 endmodule
