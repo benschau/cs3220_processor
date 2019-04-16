@@ -26,11 +26,11 @@ module Project(
   parameter ADDRTIMER = 32'hFFFFF100;
 	
   // Address for BFIH.
-  parameter ADDRINTHANDLER = 32'hFFFF0000;
+  parameter ADDRINTHANDLER = 32'h200;
 
-  // Change this to fmedian2.mif before submitting
-  //parameter IMEMINITFILE = "Test.mif";
-  parameter IMEMINITFILE = "fmedian2.mif";
+  parameter IMEMINITFILE = "basic-polling.mif";
+  //parameter IMEMINITFILE = "fmedian2.mif";
+  //parameter IMEMINITFILE = "xmax.mif";
   
   parameter IMEMADDRBITS = 16;
   parameter IMEMWORDBITS = 2;
@@ -100,9 +100,9 @@ module Project(
   
   
   //*** Special system registers ***// 
-  reg [1:0] PCS; // processor control & status
-					  // PCS[0] -> Interrupt Enable bit.
-					  // PCS[1] -> Old Interrupt bit (OIE).
+  reg [1:0] PCS = 1; // processor control & status
+							// PCS[0] -> Interrupt Enable bit.
+							// PCS[1] -> Old Interrupt bit (OIE).
 								 
   reg [(DBITS-1):0] IRA; // interrupt return address
   reg [(DBITS-1):0] IHA; // interrupt handler address
@@ -663,7 +663,7 @@ module Key(ABUS, DBUS, KEY, WE, INTR, CLK, LOCK, INIT, RESET);
 	always @ (posedge CLK or posedge RESET) begin 
 		if (RESET) begin
 			KEYDATA <= 4'h0;
-			KEYCTRL <= {(BITS-1){1'b0}};
+			KEYCTRL <= {{(BITS - 5){1'b0}},1'b1,4'b0};
 			last_sample <= 4'h0;
 			sample <= 4'h0;
 			clockCount <= 4'h0;
@@ -694,7 +694,7 @@ module Key(ABUS, DBUS, KEY, WE, INTR, CLK, LOCK, INIT, RESET);
 		end
 	end
 	
-	assign INTR = KEYCTRL[0];
+	assign INTR = KEYCTRL[0] && KEYCTRL[4];
 	assign DBUS = (selData && !WE) ? {{(BITS-4){1'b0}},KEYDATA} : 
 					  (selCtl && !WE) ? KEYCTRL : 
 					  {BITS{1'bz}};
@@ -722,7 +722,7 @@ module Switch(ABUS, DBUS, SW, WE, INTR, CLK, LOCK, INIT, RESET);
 	always @ (posedge CLK or posedge RESET) begin 
 		if (RESET) begin
 			SDATA <= 10'h0;
-			SCTRL <= {(BITS-1){1'b0}};
+			SCTRL <= {{(BITS - 5){1'b0}},1'b1,4'b0};
 			sample <= 10'h0;
 			last_sample <= 10'h0;
 			clockCount <= 4'h0;
@@ -749,7 +749,7 @@ module Switch(ABUS, DBUS, SW, WE, INTR, CLK, LOCK, INIT, RESET);
 		end
 	end
 	
-	assign INTR = SCTRL[0];
+	assign INTR = SCTRL[0] && SCTRL[4];
 	assign DBUS = (selData && !WE) ? {{(BITS-10){1'b0}},SDATA} : 
 					  (selCtl && !WE) ? SCTRL : 
 					  {BITS{1'bz}};
@@ -767,9 +767,9 @@ module Timer(ABUS, DBUS, WE, INTR, CLK, LOCK, INIT, RESET);
 	
 	wire selCnt = (ABUS === BASE);
 	wire selLim = (ABUS === BASE + 4);
-	wire selData = selCnt || selLim; // select TCNT/TLIM
 	wire selCtl = (ABUS === BASE + 8); // select TCTL
 	
+	wire rdLim = (!WE) && selLim;
 	wire rdCtl = (!WE) && selCtl;
 	wire rdCnt = (!WE) && selCnt;
 	
@@ -782,48 +782,41 @@ module Timer(ABUS, DBUS, WE, INTR, CLK, LOCK, INIT, RESET);
 		if (RESET) begin 
 			TCNT <= {(BITS - 1){1'b0}};
 			TLIM <= {(BITS - 1){1'b0}};
-			TCTL <= {(BITS - 1){1'b0}};
+			TCTL <= {(BITS - 1){1'b0}}; 
+			TCTL <= {{(BITS - 5){1'b0}},1'b1,4'b0};
 		end else begin 
-			if (selData && !WE) begin
-				TCTL[0] <= 0;
-			end
-		
 			if (WE) begin
 				if (selCnt) begin
 					TCNT <= DBUS;
 				end else if (selLim) begin
-					TLIM <= DBUS; 
+					TCNT <= 0;
+					TLIM <= DBUS;
 				end
-				
+			
 				if (selCtl && DBUS == 0) begin
-					if (ABUS === BASE + 8) begin // ready bit
-						TCTL[0] <= 0;
-					end
-					
-					if (ABUS === BASE + 9) begin // overflow bit
-						TCTL[1] <= 0;
-					end
-				end
-			end
-		
-			if ((TLIM != 0) && (TCNT == TLIM - 1)) begin
-				//TCNT <= TCNT + 1; // commented out as I don't know what the purpose of doing this is.
-				TCNT <= 0;
-				TCTL[0] <= 1;
-			end else begin
-				TCNT <= TCNT + 1;
-				
-				if (TCTL[0] == 1) begin
-					TCTL[1] = 1;
+					TCTL[0] <= DBUS;	// clear ready bit
+					TCTL[1] <= DBUS;	// clear overflow bit
+					TCTL[4] <= DBUS; 	// clear interrupt bit
 				end
 			end
 			
+			if ((TLIM != 0) && (TCNT >= TLIM)) begin
+				TCNT <= 0;
+				if (TCTL[0]) begin
+					TCTL[1] <= 1;
+				end else begin
+					TCTL[0] <= 1;
+				end
+			end
+			
+			TCNT <= TCNT + 1;
 		end
 	end
 	
-	assign INTR = TCTL[0];
+	assign INTR = TCTL[4] && TCTL[0];
 	assign DBUS = rdCtl ? {TCTL} :
 					  rdCnt ? {TCNT} :
+					  rdLim ? {TLIM} :
 					  {BITS{1'bz}};
 	
 endmodule
