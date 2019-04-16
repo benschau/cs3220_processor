@@ -228,7 +228,9 @@
             ADDI   Zero,A3,1                    ; A3 <= 1
             BNE    A1,A3,NextHex                ; A1 != A3 (SW[0] != 1)
 
-            ORI    A2,A2,StateSpeed             ; Put StateSpeed into the new place we've made for it. 
+            ADDI   Zero,A1,StateSpeed
+            LW     A3,0(A1)                     ; Store the current contents of StateSpeed.
+            OR     A2,A2,A3                     ; Put StateSpeed into the new place we've made for it. 
             
             NextHex:
                 BNE     A0,Zero,DisplayHexLoop      ; A0 != 0, continue to loop to fill A2.
