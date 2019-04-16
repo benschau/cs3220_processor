@@ -345,20 +345,20 @@ regs = {
 
     'sp'    :   '1110', # r14
 
-    'ra'    :   '1111'  # r15
+    'ra'    :   '1111',  # r15
 
     # ssp - system stack pointer, which we designate R11 (1011). 
-    'ssp'   :   '1011' 
+    'ssp'   :   '1011',
     
     # system registers, use only through RSR, WSR, RETI
     # mostly here for clarity's sake
-    'ira'   :   '0001' # interrupt return address reg
+    'ira'   :   '0001', # interrupt return address reg
 
-    'iha'   :   '0010' # interrupt handler address reg
+    'iha'   :   '0010', # interrupt handler address reg
 
-    'idn'   :   '0011' # interrupt device id reg
+    'idn'   :   '0011', # interrupt device id reg
 
-    'pcs'   :   '0100' # process control & status reg
+    'pcs'   :   '0100', # process control & status reg
 
 }
 

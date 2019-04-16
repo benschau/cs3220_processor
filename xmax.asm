@@ -99,7 +99,7 @@
             ADDI    Zero,A1,0           ; A1 (Former counter contents) <= 0
 
         StateMachine:
-            ADDI    Zero,A2,Zero
+            ADDI    Zero,A2,0
             BEQ     A1,A2,State0
             ADDI    Zero,A2,2
             BEQ     A1,A2,State2
@@ -223,9 +223,9 @@
 
             ; A0[0] is 1, we OR StateSpeed. Otherwise, we just skip downward.
             ANDI   A0,A1,1                      ; Check SW[0]
-            RSHF   A0,A0,1                      ; A0 <= A0 << 1
-
             ADDI   Zero,A3,1                    ; A3 <= 1
+            RSHF   A0,A0,A3                     ; A0 <= A0 >> 1
+
             BNE    A1,A3,NextHex                ; A1 != A3 (SW[0] != 1)
 
             ADDI   Zero,A1,StateSpeed
