@@ -179,9 +179,15 @@
 
             ADD     A2,A0,A1                    ; A2 <= TLIM/BlinkSpeed + DefIncrementVal
             ADDI    Zero,A1,MaxBlinkSpeed
+            BGT     A2,A1,IntHandlerCleanup 
 
-            BGT     A2,A1,IntHandlerCleanUp     
             SW      A2,TLIM(Zero)               ; If it's not past the max, store it.
+    
+            ADDI    Zero,A1,StateSpeed          
+            LW      A2,0(A1)                    ; A2 <= StateSpeed contents 
+            ADDI    A2,A2,1                     ; A2 <= A2 + 1     
+            SW      A2,0(A1)                    ; Update the StateSpeed (for the HEX display)
+
             BR      IntHandlerCleanup
             
         DecrSpeed:
@@ -190,9 +196,15 @@
 
             SUB     A2,A0,A1                    ; A2 <= TLIM/BlinkSpeed - DefIncrementVal
             ADDI    Zero,A1,MinBlinkSpeed
+            BLT     A2,A1,IntHandlerCleanup
 
-            BLT     A2,A1,IntHandlerCleanUp     
             SW      A2,TLIM(Zero)               ; If it's not past the min, store it.
+
+            ADDI    Zero,A1,StateSpeed          
+            LW      A2,0(A1)                    ; A2 <= StateSpeed contents 
+            SUBI    A2,A2,1                     ; A2 <= A2 - 1     
+            SW      A2,0(A1)                    ; Update the StateSpeed (for the HEX display)
+
             BR      IntHandlerCleanup
 
     ; Switch Handler
@@ -225,7 +237,7 @@
 
         BR      IntHandlerCleanup
 
-    IntHandlerCleanUp: 
+    IntHandlerCleanup: 
         ; Restore general purpose registers to the stack
         ; TODO: if you change the top part, gotta change this part.
         LW      A0,0(SSP)
