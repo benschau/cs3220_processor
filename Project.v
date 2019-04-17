@@ -30,7 +30,7 @@ module Project(
 
   // Change this to fmedian2.mif before submitting
   //parameter IMEMINITFILE = "Test.mif";
-  parameter IMEMINITFILE = "fmedian2.mif";
+  parameter IMEMINITFILE = "test_led.mif";
   
   parameter IMEMADDRBITS = 16;
   parameter IMEMWORDBITS = 2;
@@ -479,6 +479,7 @@ module Project(
       regval_MEM  <= {DBITS{1'b0}};
       wregno_MEM  <= {REGNOBITS{1'b0}};
       ctrlsig_MEM <= 1'b0;
+		PCS 			<= 2'b0;
     end else begin
 		if (intreq) begin
 			IRA <= pcgood_EX_w;
@@ -685,7 +686,7 @@ module Key(ABUS, DBUS, KEY, WE, INTR, CLK, LOCK, INIT, RESET);
 				clockCount <= 4'h0;
 			end
 			clockCount <= clockCount + 1;
-			if (WE) begin
+			if (selCtl && WE) begin
 				if (DBUS[1] === 0) begin
 					KEYCTRL[1] <= 0;
 				end

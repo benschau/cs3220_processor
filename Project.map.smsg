@@ -1,4 +1,4 @@
-Warning (10268): Verilog HDL information at Project.v(158): always construct contains both blocking and non-blocking assignments File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 158
+Warning (10268): Verilog HDL information at Project.v(174): always construct contains both blocking and non-blocking assignments File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 174
 Info (10281): Verilog HDL Declaration information at Project.v(4): object "KEY" differs only in case from object "key" in the same scope File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 4
 Info (10281): Verilog HDL Declaration information at Project.v(13): object "LEDR" differs only in case from object "ledr" in the same scope File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 13
-Warning (10268): Verilog HDL information at Project.v(786): always construct contains both blocking and non-blocking assignments File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 786
+Warning (10268): Verilog HDL information at Project.v(782): always construct contains both blocking and non-blocking assignments File: C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Project.v Line: 782

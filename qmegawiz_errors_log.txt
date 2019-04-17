@@ -1,0 +1,6 @@
+
+
+C:/Users/Jared/Documents/CS3220/cs3220_assgn3/Pll.v
+
+Apr 16 05PM:16:40>: Megafunction PLL Intel FPGA IP v18.1 is not listed in any 
+wizard.lst file in the specified library path(s).Wizard launch aborted

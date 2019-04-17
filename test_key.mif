@@ -1,0 +1,24 @@
+DEPTH = 16384;
+WIDTH = 32;
+ADDRESS_RADIX = HEX;
+DATA_RADIX = HEX;
+CONTENT
+BEGIN
+    [0000..00ff] : dead;
+    0040 : 00980000; --> 0100 : XOR		Zero,Zero,Zero
+    0041 : 4801380e; --> 0104 : LW		SP,StackTopVal(Zero)
+    0042 : 68f02000; --> 0108 : SW		Zero,LEDR(Zero)
+    0043 : 68f00000; --> 010c : SW		Zero,HEX(Zero)
+    0044 : 80f08001; --> 0110 : ADDI		Zero,A0,KEY
+    0045 : 48000415; --> 0114 : LW		T0,4(A0)
+    0046 : 90000155; --> 0118 : ANDI		T0,T0,0x1
+    0047 : 20fffd50; --> 011c : BEQ		T0,Zero,Poll
+    0048 : 48f08005; --> 0120 : LW		T0,KEY(Zero)
+    0049 : 48f02006; --> 0124 : LW		T1,LEDR(Zero)
+    004a : 9403f055; --> 0128 : ORI		T0,T0,0x3F0
+    004b : 00980665; --> 012c : XOR		T1,T1,T0
+    004c : 68f02006; --> 0130 : SW		T1,LEDR(Zero)
+    004d : 20fff600; --> 0134 : BR		MainLoop
+    004e : 00010000; --> 0138 : .WORD StkTop
+    [004f..3fff] : dead;
+END;
