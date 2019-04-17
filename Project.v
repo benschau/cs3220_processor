@@ -199,7 +199,7 @@ module Project(
   wire rd_mem_ID_w;
   wire wr_mem_ID_w;
   wire wr_reg_ID_w;
-  wire [4:0] ctrlsig_ID_w;
+  wire [7:0] ctrlsig_ID_w;
   wire [REGNOBITS-1:0] wregno_ID_w;
   wire wr_reg_EX_w;
   wire wr_reg_MEM_w;
@@ -346,6 +346,7 @@ module Project(
 
   wire is_br_EX_w;
   wire is_jmp_EX_w;
+  wire is_reti_EX_w;
 
   reg [INSTBITS-1:0] inst_EX; /* This is for debugging */
   reg br_cond_EX;
@@ -560,7 +561,7 @@ module Project(
   
   assign abus = memaddr_MEM_w;
   assign we   = wr_mem_MEM_w;
-  assign dbus = wr_mem_MEM_w ? regval2_EX : {DBITS{1'bz}};
+  assign dbus = wr_mem_MEM_w ? regval_MEM : {DBITS{1'bz}};
   
   // TODO
   wire init;
@@ -685,7 +686,7 @@ module Key(ABUS, DBUS, KEY, WE, INTR, CLK, LOCK, INIT, RESET);
 				last_sample <= sample;
 				clockCount <= 4'h0;
 			end
-			clockCount <= clockCount + 1;
+			clockCount <= clockCount + 4'h1;
 			if (selCtl && WE) begin
 				if (DBUS[1] === 0) begin
 					KEYCTRL[1] <= 0;
@@ -740,7 +741,7 @@ module Switch(ABUS, DBUS, SW, WE, INTR, CLK, LOCK, INIT, RESET);
 				last_sample <= sample;
 				clockCount <= 4'h0;
 			end
-			clockCount <= clockCount + 1;
+			clockCount <= clockCount + 4'h1;
 			if (WE) begin
 				if (DBUS[1] === 0) begin
 					SCTRL[1] <= 0;
@@ -783,7 +784,6 @@ module Timer(ABUS, DBUS, WE, INTR, CLK, LOCK, INIT, RESET);
 		if (RESET) begin 
 			TCNT <= {(BITS - 1){1'b0}};
 			TLIM <= {(BITS - 1){1'b0}};
-			TCTL <= {(BITS - 1){1'b0}}; 
 			TCTL <= {(BITS - 1){1'b0}};
 		end else begin 
 			if (WE) begin
@@ -796,12 +796,12 @@ module Timer(ABUS, DBUS, WE, INTR, CLK, LOCK, INIT, RESET);
 			
 				if (selCtl) begin
 					if (DBUS[0] == 0) 
-						TCTL[0] <= DBUS;	// clear ready bit
+						TCTL[0] <= DBUS[0];	// clear ready bit
 					
 					if (DBUS[1] == 0) 
-						TCTL[1] <= DBUS;	// clear overflow bit
+						TCTL[1] <= DBUS[1];	// clear overflow bit
 					
-					TCTL[4] <= DBUS; 	// fill interrupt bit
+					TCTL[4] <= DBUS[4]; 	// fill interrupt bit
 				end
 			end
 			
