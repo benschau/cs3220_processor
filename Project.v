@@ -438,6 +438,10 @@ module Project(
   
 
   //*** MEM STAGE ***//
+  
+  wire [(DBITS-1):0] abus;
+  wire [(DBITS-1):0] dbus;
+  wire 				   we; /* write enable */
 
   wire rd_mem_MEM_w;
   wire wr_mem_MEM_w;
@@ -461,7 +465,7 @@ module Project(
   assign wr_mem_MEM_w = ctrlsig_EX[1];
   assign wr_reg_MEM_w = ctrlsig_EX[0];
   // Read from D-MEM
-  assign rd_val_MEM_w = (memaddr_MEM_w == ADDRKEY) ? {{(DBITS-KEYBITS){1'b0}}, ~KEY} :
+  assign rd_val_MEM_w = (memaddr_MEM_w & 32'hFFFFF000 === 32'hFFFFF000) ? dbus :
 									dmem[memaddr_MEM_w[DMEMADDRBITS-1:DMEMWORDBITS]];
 									
   assign is_rsr_MEM_w = ctrlsig_EX[3];
@@ -555,10 +559,6 @@ module Project(
   /*** Interrupt Handling ***/
   
   // Setup and create address/data/we buses.
-  wire [(DBITS-1):0] abus;
-  wire [(DBITS-1):0] dbus;
-  wire 				   we; /* write enable */
-  
   assign abus = memaddr_MEM_w;
   assign we   = wr_mem_MEM_w;
   assign dbus = wr_mem_MEM_w ? regval_MEM : {DBITS{1'bz}};
