@@ -363,6 +363,9 @@ module Project(
   
 
   //*** MEM STAGE ***//
+  
+  wire [DBITS-1:0] abus;
+  wire [DBITS-1:0] dbus;
 
   wire rd_mem_MEM_w;
   wire wr_mem_MEM_w;
@@ -382,13 +385,17 @@ module Project(
   assign wr_mem_MEM_w = ctrlsig_EX[1];
   assign wr_reg_MEM_w = ctrlsig_EX[0];
   // Read from D-MEM
-  assign rd_val_MEM_w = (memaddr_MEM_w == ADDRKEY) ? {{(DBITS-KEYBITS){1'b0}}, ~KEY} :
+  assign rd_val_MEM_w = memaddr_MEM_w >= 32'hFFFFF000 ? dbus :
 									dmem[memaddr_MEM_w[DMEMADDRBITS-1:DMEMWORDBITS]];
+
+  assign abus = memaddr_MEM_w;
+  assign dbus = wr_mem_MEM_w ? regval2_EX : {32{1'bz}};
 
   // Write to D-MEM
   always @ (posedge clk) begin
-    if(wr_mem_MEM_w)
+    if(wr_mem_MEM_w) begin
       dmem[memaddr_MEM_w[DMEMADDRBITS-1:DMEMWORDBITS]] <= regval2_EX;
+	 end
   end
 
   always @ (posedge clk or posedge reset) begin
@@ -439,34 +446,31 @@ module Project(
   
   /*** I/O ***/
   // Create and connect HEX register
-  reg [23:0] HEX_out;
+  wire we;
+  assign we = wr_mem_MEM_w;
   
-  SevenSeg ss5(.OUT(HEX5), .IN(HEX_out[23:20]), .OFF(1'b0));
-  SevenSeg ss4(.OUT(HEX4), .IN(HEX_out[19:16]), .OFF(1'b0));
-  SevenSeg ss3(.OUT(HEX3), .IN(HEX_out[15:12]), .OFF(1'b0));
-  SevenSeg ss2(.OUT(HEX2), .IN(HEX_out[11:8]), .OFF(1'b0));
-  SevenSeg ss1(.OUT(HEX1), .IN(HEX_out[7:4]), .OFF(1'b0));
-  SevenSeg ss0(.OUT(HEX0), .IN(HEX_out[3:0]), .OFF(1'b0));
+  Ledr #(.BITS(DBITS), .BASE(ADDRLEDR)) ledr(
+	 .ABUS(abus), 
+	 .DBUS(dbus),
+	 .WE(we),
+	 .OUT(LEDR),
+	 .CLK(clk),
+	 .RESET(reset)
+  );
   
-  always @ (posedge clk or posedge reset) begin
-    if(reset)
-	   HEX_out <= 24'hFEDEAD;
-	 else if(wr_mem_MEM_w && (memaddr_MEM_w == ADDRHEX))
-      HEX_out <= regval2_EX[HEXBITS-1:0];
-  end
-
-  // TODO: Write the code for LEDR here
-  reg [9:0] LEDR_out;
-  
-  // ...
-  always @ (posedge clk or posedge reset) begin
-    if(reset)
-		LEDR_out <= 10'd0;
-	 else if(wr_mem_MEM_w && (memaddr_MEM_w == ADDRLEDR))
-	   LEDR_out <= regval2_EX[LEDRBITS-1:0];
-  end
-
-  assign LEDR = LEDR_out;
+   Hex #(.BITS(DBITS), .BASE(ADDRHEX)) hex(
+	 .ABUS(abus), 
+	 .DBUS(dbus),
+	 .WE(we),
+	 .OUTHEX5(HEX5),
+	 .OUTHEX4(HEX4),
+	 .OUTHEX3(HEX3),
+	 .OUTHEX2(HEX2),
+	 .OUTHEX1(HEX1),
+	 .OUTHEX0(HEX0),
+	 .CLK(clk),
+	 .RESET(reset)
+  );
   
 endmodule
 
@@ -479,5 +483,190 @@ module SXT(IN, OUT);
   output [OBITS-1:0] OUT;
 
   assign OUT = {{(OBITS-IBITS){IN[IBITS-1]}}, IN};
+endmodule
+
+module Ledr(ABUS, DBUS, WE, OUT, CLK, RESET);
+	parameter BITS;
+	parameter BASE;
+
+	input wire [(BITS-1):0] ABUS;
+	inout wire [(BITS-1):0] DBUS;
+	input wire WE, CLK, RESET;
+	output wire [9:0] OUT;
+
+	reg [9:0] LEDRDATA;
+
+	wire selData = (ABUS === BASE);
+	wire rdData = (!WE) && selData; 
+
+	always @ (posedge CLK or posedge RESET) begin
+		if (RESET) begin
+			LEDRDATA <= 10'd0;
+		end else begin
+			
+			if (WE && selData) begin
+				LEDRDATA <= DBUS[9:0];
+			end
+			
+		end
+		
+	end
+
+	assign OUT = LEDRDATA;
+	assign DBUS = rdData ? {22'b0,LEDRDATA} :
+					  {BITS{1'bz}};
+	
+endmodule
+
+module Hex(ABUS, DBUS, WE, OUTHEX5, OUTHEX4, OUTHEX3, OUTHEX2, OUTHEX1, OUTHEX0, CLK, RESET);
+	parameter BITS;
+	parameter BASE;
+	
+	input wire [(BITS-1):0] ABUS;
+	inout wire [(BITS-1):0] DBUS;
+	input wire WE, CLK, RESET;
+	output wire [7:0] OUTHEX5, OUTHEX4, OUTHEX3, OUTHEX2, OUTHEX1, OUTHEX0;
+	
+	reg [23:0] HEXDATA;
+	
+	wire selData = (ABUS === BASE);
+	wire rdData = (!WE) && selData; 
+	
+	always @ (posedge CLK or posedge RESET) begin
+		if (RESET) begin
+			HEXDATA <= 24'hFEDEAD;
+		end else begin
+		
+			if (WE && selData) begin
+				HEXDATA <= DBUS[23:0];
+			end 
+			
+		end
+	end
+	
+	wire [3:0] HEX5 = HEXDATA[23:20];
+	wire [3:0] HEX4 = HEXDATA[19:16];
+	wire [3:0] HEX3 = HEXDATA[15:12];
+	wire [3:0] HEX2 = HEXDATA[11:8];
+	wire [3:0] HEX1 = HEXDATA[7:4];
+	wire [3:0] HEX0 = HEXDATA[3:0];
+	
+	assign OUTHEX5 =
+		(1'b0)         ? 7'b1111111 : /* IN == OFF */
+		(HEX5 == 4'h0) ? 7'b1000000 :
+		(HEX5 == 4'h1) ? 7'b1111001 :
+		(HEX5 == 4'h2) ? 7'b0100100 :
+		(HEX5 == 4'h3) ? 7'b0110000 :
+		(HEX5 == 4'h4) ? 7'b0011001 :
+		(HEX5 == 4'h5) ? 7'b0010010 :
+		(HEX5 == 4'h6) ? 7'b0000010 :
+		(HEX5 == 4'h7) ? 7'b1111000 :
+		(HEX5 == 4'h8) ? 7'b0000000 :
+		(HEX5 == 4'h9) ? 7'b0010000 :
+		(HEX5 == 4'hA) ? 7'b0001000 :
+		(HEX5 == 4'hb) ? 7'b0000011 :
+		(HEX5 == 4'hc) ? 7'b1000110 :
+		(HEX5 == 4'hd) ? 7'b0100001 :
+		(HEX5 == 4'he) ? 7'b0000110 :
+		/*HEX5 == 4'hf*/ 7'b0001110 ;
+  
+  assign OUTHEX4 =
+		(1'b0)         ? 7'b1111111 : /* IN == OFF */
+		(HEX4 == 4'h0) ? 7'b1000000 :
+		(HEX4 == 4'h1) ? 7'b1111001 :
+		(HEX4 == 4'h2) ? 7'b0100100 :
+		(HEX4 == 4'h3) ? 7'b0110000 :
+		(HEX4 == 4'h4) ? 7'b0011001 :
+		(HEX4 == 4'h5) ? 7'b0010010 :
+		(HEX4 == 4'h6) ? 7'b0000010 :
+		(HEX4 == 4'h7) ? 7'b1111000 :
+		(HEX4 == 4'h8) ? 7'b0000000 :
+		(HEX4 == 4'h9) ? 7'b0010000 :
+		(HEX4 == 4'hA) ? 7'b0001000 :
+		(HEX4 == 4'hb) ? 7'b0000011 :
+		(HEX4 == 4'hc) ? 7'b1000110 :
+		(HEX4 == 4'hd) ? 7'b0100001 :
+		(HEX4 == 4'he) ? 7'b0000110 :
+		/*HEX4 == 4'hf*/ 7'b0001110 ;
+		
+	assign OUTHEX3 =
+		(1'b0)         ? 7'b1111111 : /* IN == OFF */
+		(HEX3 == 4'h0) ? 7'b1000000 :
+		(HEX3 == 4'h1) ? 7'b1111001 :
+		(HEX3 == 4'h2) ? 7'b0100100 :
+		(HEX3 == 4'h3) ? 7'b0110000 :
+		(HEX3 == 4'h4) ? 7'b0011001 :
+		(HEX3 == 4'h5) ? 7'b0010010 :
+		(HEX3 == 4'h6) ? 7'b0000010 :
+		(HEX3 == 4'h7) ? 7'b1111000 :
+		(HEX3 == 4'h8) ? 7'b0000000 :
+		(HEX3 == 4'h9) ? 7'b0010000 :
+		(HEX3 == 4'hA) ? 7'b0001000 :
+		(HEX3 == 4'hb) ? 7'b0000011 :
+		(HEX3 == 4'hc) ? 7'b1000110 :
+		(HEX3 == 4'hd) ? 7'b0100001 :
+		(HEX3 == 4'he) ? 7'b0000110 :
+		/*HEX3 == 4'hf*/ 7'b0001110 ;
+		
+	assign OUTHEX2 =
+		(1'b0)         ? 7'b1111111 : /* IN == OFF */
+		(HEX2 == 4'h0) ? 7'b1000000 :
+		(HEX2 == 4'h1) ? 7'b1111001 :
+		(HEX2 == 4'h2) ? 7'b0100100 :
+		(HEX2 == 4'h3) ? 7'b0110000 :
+		(HEX2 == 4'h4) ? 7'b0011001 :
+		(HEX2 == 4'h5) ? 7'b0010010 :
+		(HEX2 == 4'h6) ? 7'b0000010 :
+		(HEX2 == 4'h7) ? 7'b1111000 :
+		(HEX2 == 4'h8) ? 7'b0000000 :
+		(HEX2 == 4'h9) ? 7'b0010000 :
+		(HEX2 == 4'hA) ? 7'b0001000 :
+		(HEX2 == 4'hb) ? 7'b0000011 :
+		(HEX2 == 4'hc) ? 7'b1000110 :
+		(HEX2 == 4'hd) ? 7'b0100001 :
+		(HEX2 == 4'he) ? 7'b0000110 :
+		/*HEX2 == 4'hf*/ 7'b0001110 ;
+		
+	assign OUTHEX1 =
+		(1'b0)         ? 7'b1111111 : /* IN == OFF */
+		(HEX1 == 4'h0) ? 7'b1000000 :
+		(HEX1 == 4'h1) ? 7'b1111001 :
+		(HEX1 == 4'h2) ? 7'b0100100 :
+		(HEX1 == 4'h3) ? 7'b0110000 :
+		(HEX1 == 4'h4) ? 7'b0011001 :
+		(HEX1 == 4'h5) ? 7'b0010010 :
+		(HEX1 == 4'h6) ? 7'b0000010 :
+		(HEX1 == 4'h7) ? 7'b1111000 :
+		(HEX1 == 4'h8) ? 7'b0000000 :
+		(HEX1 == 4'h9) ? 7'b0010000 :
+		(HEX1 == 4'hA) ? 7'b0001000 :
+		(HEX1 == 4'hb) ? 7'b0000011 :
+		(HEX1 == 4'hc) ? 7'b1000110 :
+		(HEX1 == 4'hd) ? 7'b0100001 :
+		(HEX1 == 4'he) ? 7'b0000110 :
+		/*HEX1 == 4'hf*/ 7'b0001110 ;
+   
+	assign OUTHEX0 =
+		(1'b0)         ? 7'b1111111 : /* IN == OFF */
+		(HEX0 == 4'h0) ? 7'b1000000 :
+		(HEX0 == 4'h1) ? 7'b1111001 :
+		(HEX0 == 4'h2) ? 7'b0100100 :
+		(HEX0 == 4'h3) ? 7'b0110000 :
+		(HEX0 == 4'h4) ? 7'b0011001 :
+		(HEX0 == 4'h5) ? 7'b0010010 :
+		(HEX0 == 4'h6) ? 7'b0000010 :
+		(HEX0 == 4'h7) ? 7'b1111000 :
+		(HEX0 == 4'h8) ? 7'b0000000 :
+		(HEX0 == 4'h9) ? 7'b0010000 :
+		(HEX0 == 4'hA) ? 7'b0001000 :
+		(HEX0 == 4'hb) ? 7'b0000011 :
+		(HEX0 == 4'hc) ? 7'b1000110 :
+		(HEX0 == 4'hd) ? 7'b0100001 :
+		(HEX0 == 4'he) ? 7'b0000110 :
+		/*HEX0 == 4'hf*/ 7'b0001110 ;
+  
+	assign DBUS = rdData ? {8'b0,HEXDATA} :
+					  {BITS{1'bz}};
+	
 endmodule
 
