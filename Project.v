@@ -794,10 +794,14 @@ module Timer(ABUS, DBUS, WE, INTR, CLK, LOCK, INIT, RESET);
 					TLIM <= DBUS;
 				end
 			
-				if (selCtl && DBUS == 0) begin
-					TCTL[0] <= DBUS;	// clear ready bit
-					TCTL[1] <= DBUS;	// clear overflow bit
-					TCTL[4] <= DBUS; 	// clear interrupt bit
+				if (selCtl) begin
+					if (DBUS[0] == 0) 
+						TCTL[0] <= DBUS;	// clear ready bit
+					
+					if (DBUS[1] == 0) 
+						TCTL[1] <= DBUS;	// clear overflow bit
+					
+					TCTL[4] <= DBUS; 	// fill interrupt bit
 				end
 			end
 			
