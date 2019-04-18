@@ -203,7 +203,7 @@
             ANDI    A0,A1,2                         ; Check Key[1]
             ADDI    Zero,A2,2
             BEQ     A1,A2,DecrLen                   ; If Key[1] == 1, decrease length of timer (decrease blinkspeed).
-            BNE     A1,A2,IntHandlerCleanup
+            BNE     A1,A2,Switch
         
         DecrLen:
             ADDI    Zero,A1,DefIncrementVal
@@ -211,14 +211,14 @@
 
             SUB     A2,A0,A1                    ; A2 <= TLIM/BlinkSpeed - DefIncrementVal
             ADDI    Zero,A1,MinBlinkSpeed
-            BLT     A2,A1,IntHandlerCleanup
+            BLT     A2,A1,Switch
 
             SW      A2,TLIM(Zero)               ; If it's not past the min, store it.
 
             SUBI    S0,S0,1
             SW      S0,HEX(Zero)
 
-        BR      IntHandlerCleanup
+        BR      Switch
 
     ; Switch Handler
     Switch:  
