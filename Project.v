@@ -27,7 +27,7 @@ module Project(
 
   // Change this to fmedian2.mif before submitting
   //parameter IMEMINITFILE = "Test.mif";
-  parameter IMEMINITFILE = "test_timer.mif";
+  parameter IMEMINITFILE = "test_sys.mif";
   
   parameter IMEMADDRBITS = 16;
   parameter IMEMWORDBITS = 2;
@@ -49,6 +49,7 @@ module Project(
   parameter OP1_ANDI = 6'b100100;
   parameter OP1_ORI  = 6'b100101;
   parameter OP1_XORI = 6'b100110;
+  parameter OP1_SYS  = 6'b111111;
   
   // Add parameters for secondary opcode values 
   /* OP2 */
@@ -67,6 +68,9 @@ module Project(
   parameter OP2_NXOR = 8'b00101110;
   parameter OP2_RSHF = 8'b00110000;
   parameter OP2_LSHF = 8'b00110001;
+  parameter OP2_RETI = 8'b00000001;
+  parameter OP2_RSR  = 8'b00000010;
+  parameter OP2_WSR  = 8'b00000011;
   
   parameter HEXBITS  = 24;
   parameter LEDRBITS = 10;
@@ -204,17 +208,18 @@ module Project(
   assign rd_mem_ID_w = op1_ID_w === OP1_LW;
   assign wr_mem_ID_w = op1_ID_w === OP1_SW;
   // Register writes occur on all instructions except non JAL branches and SW
-  assign wr_reg_ID_w = !((is_br_ID_w && !is_jmp_ID_w) || wr_mem_ID_w);
+  assign wr_reg_ID_w = !((is_br_ID_w && !is_jmp_ID_w) || wr_mem_ID_w 
+		|| (op1_ID_w === OP1_SYS && op2_ID_w !== OP2_RSR));
   // Among instructions which write back, Rd is target for all ALUR instructions,
   // and Rt is target for all others
-  assign wregno_ID_w = (op1_ID_w === OP1_ALUR) ? rd_ID_w : rt_ID_w;
+  assign wregno_ID_w = (op1_ID_w === OP1_ALUR || op1_ID_w === OP1_SYS) ? rd_ID_w : rt_ID_w;
 
   assign ctrlsig_ID_w = {is_br_ID_w, is_jmp_ID_w, rd_mem_ID_w, wr_mem_ID_w, wr_reg_ID_w};
   
   // DONE: Specify stall condition
   wire chkRt;
   // Rt is not used only in JAL, LW, and immediate arithmetic instructions
-  assign chkRt = !(op1_ID_w === OP1_JAL || op1_ID_w === OP1_LW || op1_ID_w[5:3] === 3'b100);
+  assign chkRt = !(op1_ID_w === OP1_JAL || op1_ID_w === OP1_LW || op1_ID_w[5:3] === 3'b100 || op1_ID_w === OP1_SYS);
   // Check if one of the registers this instruction depends on is going to be written to by the instructions 
   // in EX or MEM. All instructions depend on Rs - only stall on write to Rt if this instruction actually
   // depends on it.
@@ -227,7 +232,8 @@ module Project(
   assign rs_mem_dep_w = rs_ID_w === wregno_EX && ctrlsig_EX[0];
   assign rt_ex_dep_w = chkRt && rt_ID_w === wregno_ID && ctrlsig_ID[0];
   assign rt_mem_dep_w = chkRt && rt_ID_w === wregno_EX && ctrlsig_EX[0];
-  assign stall_pipe = (rs_ex_dep_w || rt_ex_dep_w) && op1_ID === OP1_LW;
+  assign stall_pipe = (rs_ex_dep_w || rt_ex_dep_w) 
+			&& (op1_ID === OP1_LW || (op1_ID === OP1_SYS && op2_ID === OP2_RSR));
 
   // ID_latch
   always @ (posedge clk or posedge reset) begin
@@ -265,7 +271,9 @@ module Project(
 		    regval1_ID <= rd_mem_MEM_w ? rd_val_MEM_w : aluout_EX;
 		  else
 		    regval1_ID <= regval1_ID_w;
-		  if (rt_ex_dep_w)
+		  if (op1_ID_w === OP1_SYS) 
+			 regval2_ID <= regval1_ID_w;
+		  else if (rt_ex_dep_w)
 		    regval2_ID <= aluout_EX_r;
 		  else if (rt_mem_dep_w)
 		    regval2_ID <= rd_mem_MEM_w ? rd_val_MEM_w : aluout_EX;
@@ -290,6 +298,8 @@ module Project(
   reg signed [DBITS-1:0] aluout_EX_r;
   reg [DBITS-1:0] aluout_EX;
   reg [DBITS-1:0] regval2_EX;
+  reg [OP1BITS-1:0] op1_EX;
+  reg [OP2BITS-1:0] op2_EX;
 
   always @ (op1_ID or regval1_ID or regval2_ID) begin
     case (op1_ID)
@@ -352,6 +362,8 @@ module Project(
       wregno_EX  <= {REGNOBITS{1'b0}};
       ctrlsig_EX <= 3'h0;
 		regval2_EX <= {DBITS{1'b0}};
+		op1_EX     <= {OP1BITS{1'b0}};
+		op2_EX     <= {OP2BITS{1'b0}};
     end else begin
 		// TODO: Specify EX latches
       inst_EX    <= inst_ID;
@@ -359,6 +371,8 @@ module Project(
       wregno_EX  <= wregno_ID;
       ctrlsig_EX <= ctrlsig_ID[2:0];
       regval2_EX <= regval2_ID;
+		op1_EX     <= op1_ID;
+		op2_EX     <= op2_ID;
     end
   end
   
@@ -398,6 +412,38 @@ module Project(
       dmem[memaddr_MEM_w[DMEMADDRBITS-1:DMEMWORDBITS]] <= regval2_EX;
 	 end
   end
+  
+  // Interrupt support
+  reg [DBITS-1:0] PCS;
+  reg [DBITS-1:0] IHA;
+  reg [DBITS-1:0] IRA;
+  reg [DBITS-1:0] IDN;
+  always @ (posedge clk or posedge reset) begin
+    if (reset) begin
+		PCS <= {DBITS{1'b0}};
+		IHA <= {{DBITS-12{1'b0}},{12'h200}};
+		IRA <= {DBITS{1'b0}};
+		IDN <= {DBITS{1'b0}};
+	 end else begin
+		if (op1_EX === OP1_SYS && op2_EX === OP2_WSR) begin
+			case (wregno_EX)
+				4'h1: IRA <= regval2_EX;
+				4'h2: IHA <= regval2_EX;
+				4'h3: IDN <= regval2_EX;
+				4'h4: PCS <= regval2_EX;
+			endcase
+		end
+	 end
+  end
+  
+  wire [REGNOBITS-1:0] sys_reg_MEM_w;
+  assign sys_reg_MEM_w = inst_EX[7:4];
+  wire [DBITS-1:0] sys_val_MEM_w;
+  assign sys_val_MEM_w = sys_reg_MEM_w === 4'h1 ? IRA :
+								 sys_reg_MEM_w === 4'h2 ? IHA :
+								 sys_reg_MEM_w === 4'h3 ? IDN :
+								 sys_reg_MEM_w === 4'h4 ? PCS :
+								 {DBITS{1'b0}};
 
   always @ (posedge clk or posedge reset) begin
     if(reset) begin
@@ -407,12 +453,13 @@ module Project(
       ctrlsig_MEM <= 1'b0;
     end else begin
 		inst_MEM		<= inst_EX;
-      regval_MEM  <= rd_mem_MEM_w ? rd_val_MEM_w : aluout_EX;
+      regval_MEM  <= rd_mem_MEM_w ? rd_val_MEM_w : 
+							op1_EX === OP1_SYS && op2_EX === OP2_RSR ? sys_val_MEM_w :
+							aluout_EX;
       wregno_MEM  <= wregno_EX;
       ctrlsig_MEM <= ctrlsig_EX[0];
     end
   end
-
 
   /*** WRITE BACK STAGE ***/ 
 
