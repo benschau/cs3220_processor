@@ -1,0 +1,52 @@
+DEPTH = 16384;
+WIDTH = 32;
+ADDRESS_RADIX = HEX;
+DATA_RADIX = HEX;
+CONTENT
+BEGIN
+    [0000..00ff] : dead;
+    0040 : 00980000; --> 0100 : XOR		Zero,Zero,Zero
+    0041 : 4810400b; --> 0104 : LW		SSP,StackTopVal(Zero)
+    0042 : 68f02000; --> 0108 : SW		Zero,LEDR(Zero)
+    0043 : 68f00000; --> 010c : SW		Zero,HEX(Zero)
+    0044 : 80100005; --> 0110 : ADDI		Zero,T0,0x1000
+    0045 : fc0c0250; --> 0114 : WSR		IHA,T0
+    0046 : 80001005; --> 0118 : ADDI		Zero,T0,0x10
+    0047 : 68f10805; --> 011c : SW		T0,TCTL(Zero)
+    0048 : 8001f401; --> 0120 : ADDI		Zero,A0,500
+    0049 : 68f10401; --> 0124 : SW		A0,TLIM(Zero)
+    004a : 80000c02; --> 0128 : ADDI		Zero,A1,12
+    004b : 80000105; --> 012c : ADDI		Zero,T0,0x01
+    004c : fc0c0450; --> 0130 : WSR		PCS,T0
+    004d : 800fff05; --> 0134 : ADDI		Zero,T0,0xFFF
+    004e : 00c40552; --> 0138 : LSHF		T0,T0,A1
+    004f : 800fff55; --> 013c : ADDI		T0,T0,0xFFF
+    0050 : 80ffff55; --> 0140 : SUBI		T0,T0,1
+    0051 : 2cfffe50; --> 0144 : BNE		T0,Zero,MainLoop
+    0052 : 48f02006; --> 0148 : LW		T1,LEDR(Zero)
+    0053 : 00b00666; --> 014c : NOT		T1,T1
+    0054 : 68f02006; --> 0150 : SW		T1,LEDR(Zero)
+    0055 : 800fff05; --> 0154 : ADDI		Zero,T0,0xFFF
+    0056 : 00c40552; --> 0158 : LSHF		T0,T0,A1
+    0057 : 800fff55; --> 015c : ADDI		T0,T0,0xFFF
+    0058 : 20fff700; --> 0160 : BR		MainLoop
+    [0059..0fff] : dead;
+    0400 : 80fffcbb; --> 1000 : SUBI		SSP,SSP,4
+    0401 : 680000b5; --> 1004 : SW		T0,0(SSP)
+    0402 : 80fffcbb; --> 1008 : SUBI		SSP,SSP,4
+    0403 : 680000b6; --> 100c : SW		T1,0(SSP)
+    0404 : fc080530; --> 1010 : RSR		T0,IDN
+    0405 : 48f00006; --> 1014 : LW		T1,HEX(Zero)
+    0406 : 00800665; --> 1018 : ADD		T1,T1,T0
+    0407 : 68f00006; --> 101c : SW		T1,HEX(Zero)
+    0408 : 48f10805; --> 1020 : LW		T0,TCTL(Zero)
+    0409 : 90fffe55; --> 1024 : ANDI		T0,T0,0xFFFFFFFE
+    040a : 68f10805; --> 1028 : SW		T0,TCTL(Zero)
+    040b : 480000b6; --> 102c : LW		T1,0(SSP)
+    040c : 800004bb; --> 1030 : ADDI		SSP,SSP,4
+    040d : 480000b5; --> 1034 : LW		T0,0(SSP)
+    040e : 800004bb; --> 1038 : ADDI		SSP,SSP,4
+    040f : fc040000; --> 103c : RETI
+    0410 : 00010000; --> 1040 : .WORD StkTop
+    [0411..3fff] : dead;
+END;

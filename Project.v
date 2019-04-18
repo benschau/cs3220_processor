@@ -27,7 +27,7 @@ module Project(
 
   // Change this to fmedian2.mif before submitting
   //parameter IMEMINITFILE = "Test.mif";
-  parameter IMEMINITFILE = "test_sys.mif";
+  parameter IMEMINITFILE = "test_intr.mif";
   
   parameter IMEMADDRBITS = 16;
   parameter IMEMWORDBITS = 2;
@@ -92,6 +92,18 @@ module Project(
   );
 
   assign reset = !locked;
+  
+  
+  wire IRQ;
+  wire RETI;
+  wire intr_key;
+  wire intr_sws;
+  wire intr_timer;
+  
+  reg [DBITS-1:0] PCS;
+  reg [DBITS-1:0] IHA;
+  reg [DBITS-1:0] IRA;
+  reg [DBITS-1:0] IDN;
 
 
   //*** FETCH STAGE ***//
@@ -124,7 +136,11 @@ module Project(
   always @ (posedge clk or posedge reset) begin
     if(reset)
       PC_FE <= STARTPC;
-    else if(mispred_EX_w)
+    else if(IRQ)
+		PC_FE <= IHA;
+	 else if(RETI)
+		PC_FE <= IRA;
+	 else if(mispred_EX_w)
       PC_FE <= pcgood_EX_w;
     else if(!stall_pipe)
       PC_FE <= pcpred_FE;
@@ -141,7 +157,7 @@ module Project(
   always @ (posedge clk or posedge reset) begin
     if(reset)
       inst_FE <= {INSTBITS{1'b0}};
-    else if (mispred_EX_w) // DONE: set inst_FE accounting for misprediction/stalls
+    else if (mispred_EX_w || IRQ || RETI) // DONE: set inst_FE accounting for misprediction/stalls
       inst_FE <= {INSTBITS{1'b0}};
     else if (stall_pipe)
       inst_FE <= inst_FE;
@@ -250,7 +266,7 @@ module Project(
       ctrlsig_ID <= 5'h0;
     end else begin
       // DONE: specify ID latches
-      if (stall_pipe || mispred_EX_w) begin
+      if (stall_pipe || mispred_EX_w || IRQ || RETI) begin
         PC_ID	 <= {DBITS{1'b0}};
         inst_ID	 <= {INSTBITS{1'b0}};
         op1_ID	 <= {OP1BITS{1'b0}};
@@ -300,6 +316,7 @@ module Project(
   reg [DBITS-1:0] regval2_EX;
   reg [OP1BITS-1:0] op1_EX;
   reg [OP2BITS-1:0] op2_EX;
+  reg [DBITS-1:0] pc_next_EX;
 
   always @ (op1_ID or regval1_ID or regval2_ID) begin
     case (op1_ID)
@@ -365,16 +382,29 @@ module Project(
 		regval2_EX <= {DBITS{1'b0}};
 		op1_EX     <= {OP1BITS{1'b0}};
 		op2_EX     <= {OP2BITS{1'b0}};
+		pc_next_EX <= {DBITS{1'b0}};
     end else begin
-		// TODO: Specify EX latches
-      inst_EX    <= inst_ID;
-      aluout_EX  <= aluout_EX_r;
-      wregno_EX  <= wregno_ID;
-      ctrlsig_EX <= ctrlsig_ID[2:0];
-		regval1_EX <= regval1_ID;
-      regval2_EX <= regval2_ID;
-		op1_EX     <= op1_ID;
-		op2_EX     <= op2_ID;
+		if (IRQ || RETI) begin
+			inst_EX	  <= {INSTBITS{1'b0}};
+			aluout_EX  <= {DBITS{1'b0}};
+			wregno_EX  <= {REGNOBITS{1'b0}};
+			ctrlsig_EX <= 3'h0;
+			regval1_EX <= {DBITS{1'b0}};
+			regval2_EX <= {DBITS{1'b0}};
+			op1_EX     <= {OP1BITS{1'b0}};
+			op2_EX     <= {OP2BITS{1'b0}};
+			pc_next_EX <= {DBITS{1'b0}};
+		end else begin
+			inst_EX    <= inst_ID;
+			aluout_EX  <= aluout_EX_r;
+			wregno_EX  <= wregno_ID;
+			ctrlsig_EX <= ctrlsig_ID[2:0];
+			regval1_EX <= regval1_ID;
+			regval2_EX <= regval2_ID;
+			op1_EX     <= op1_ID;
+			op2_EX     <= op2_ID;
+			pc_next_EX <= mispred_EX_w ? pcgood_EX_w : PC_ID;
+		end
     end
   end
   
@@ -416,10 +446,9 @@ module Project(
   end
   
   // Interrupt support
-  reg [DBITS-1:0] PCS;
-  reg [DBITS-1:0] IHA;
-  reg [DBITS-1:0] IRA;
-  reg [DBITS-1:0] IDN;
+  assign IRQ = inst_EX !== {DBITS{1'b0}} && op1_EX !== OP1_SYS && PCS[0] && (intr_key || intr_sws || intr_timer);
+  assign RETI = op1_EX === OP1_SYS && op2_EX === OP2_RETI;
+  
   always @ (posedge clk or posedge reset) begin
     if (reset) begin
 		PCS <= {DBITS{1'b0}};
@@ -434,6 +463,16 @@ module Project(
 				4'h3: IDN <= regval1_EX;
 				4'h4: PCS <= regval1_EX;
 			endcase
+		end else if (IRQ) begin 
+			IRA <= pc_next_EX;
+			PCS[1] <= PCS[0];
+			PCS[0] <= 0;
+			IDN <= intr_timer ? 32'h1 :
+					 intr_key   ? 32'h2 :
+					 intr_sws   ? 32'h3 :
+					              32'h0 ;
+		end else if (RETI) begin
+			PCS[0] <= PCS[1];
 		end
 	 end
   end
@@ -846,7 +885,7 @@ module Switch(ABUS, DBUS, SW, WE, INTR, CLK, RESET);
 				clockCount <= 12'h0;
 			end
 			clockCount <= clockCount + 12'h1;
-			if (WE) begin
+			if (WE && selCtl) begin
 				if (DBUS[1] === 0) begin
 					SCTRL[1] <= 0;
 				end
