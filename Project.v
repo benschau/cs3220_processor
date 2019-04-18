@@ -272,9 +272,7 @@ module Project(
 		    regval1_ID <= out_MEM_w;
 		  else
 		    regval1_ID <= regval1_ID_w;
-		  if (op1_ID_w === OP1_SYS) 
-			 regval2_ID <= regval1_ID_w;
-		  else if (rt_ex_dep_w)
+		  if (rt_ex_dep_w)
 		    regval2_ID <= aluout_EX_r;
 		  else if (rt_mem_dep_w)
 		    regval2_ID <= out_MEM_w;
@@ -298,6 +296,7 @@ module Project(
   // Note that aluout_EX_r is declared as reg, but it is output signal from combi logic
   reg signed [DBITS-1:0] aluout_EX_r;
   reg [DBITS-1:0] aluout_EX;
+  reg [DBITS-1:0] regval1_EX;
   reg [DBITS-1:0] regval2_EX;
   reg [OP1BITS-1:0] op1_EX;
   reg [OP2BITS-1:0] op2_EX;
@@ -362,6 +361,7 @@ module Project(
       aluout_EX  <= {DBITS{1'b0}};
       wregno_EX  <= {REGNOBITS{1'b0}};
       ctrlsig_EX <= 3'h0;
+		regval1_EX <= {DBITS{1'b0}};
 		regval2_EX <= {DBITS{1'b0}};
 		op1_EX     <= {OP1BITS{1'b0}};
 		op2_EX     <= {OP2BITS{1'b0}};
@@ -371,6 +371,7 @@ module Project(
       aluout_EX  <= aluout_EX_r;
       wregno_EX  <= wregno_ID;
       ctrlsig_EX <= ctrlsig_ID[2:0];
+		regval1_EX <= regval1_ID;
       regval2_EX <= regval2_ID;
 		op1_EX     <= op1_ID;
 		op2_EX     <= op2_ID;
@@ -428,10 +429,10 @@ module Project(
 	 end else begin
 		if (op1_EX === OP1_SYS && op2_EX === OP2_WSR) begin
 			case (wregno_EX)
-				4'h1: IRA <= regval2_EX;
-				4'h2: IHA <= regval2_EX;
-				4'h3: IDN <= regval2_EX;
-				4'h4: PCS <= regval2_EX;
+				4'h1: IRA <= regval1_EX;
+				4'h2: IHA <= regval1_EX;
+				4'h3: IDN <= regval1_EX;
+				4'h4: PCS <= regval1_EX;
 			endcase
 		end
 	 end

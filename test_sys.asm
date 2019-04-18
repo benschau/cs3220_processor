@@ -20,7 +20,7 @@
 	
 	ADDI		Zero,A0,500
 	SW		A0,TLIM(Zero)
-	ADDI		Zero,T0,100
+	ADDI		Zero,T0,0x100
 	WSR		IDN,T0
 
 MainLoop:
@@ -32,7 +32,7 @@ MainLoop:
 	RSR		T0,IDN
 	ADDI		T0,T0,1
 	WSR		IDN,T0
-	RSR		T0,IHA
+	RSR		T0,IDN
 	SW		T0,HEX(Zero)
 	BR		MainLoop
 
