@@ -32,7 +32,7 @@ MainLoop:
 	RSR		T0,IDN
 	ADDI		T0,T0,1
 	WSR		IDN,T0
-	RSR		T0,IDN
+	RSR		T0,IHA
 	SW		T0,HEX(Zero)
 	BR		MainLoop
 

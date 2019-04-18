@@ -27,7 +27,7 @@ module Project(
 
   // Change this to fmedian2.mif before submitting
   //parameter IMEMINITFILE = "Test.mif";
-  parameter IMEMINITFILE = "fmedian2.mif";
+  parameter IMEMINITFILE = "test_sys.mif";
   
   parameter IMEMADDRBITS = 16;
   parameter IMEMWORDBITS = 2;
@@ -170,6 +170,7 @@ module Project(
   wire [REGNOBITS-1:0] wregno_ID_w;
   wire wr_reg_EX_w;
   wire wr_reg_MEM_w;
+  wire [DBITS-1:0] out_MEM_w;
   
   // Register file
   reg [DBITS-1:0] PC_ID;
@@ -268,7 +269,7 @@ module Project(
 		  if (rs_ex_dep_w)
 		    regval1_ID <= aluout_EX_r;
 		  else if (rs_mem_dep_w)
-		    regval1_ID <= rd_mem_MEM_w ? rd_val_MEM_w : aluout_EX;
+		    regval1_ID <= out_MEM_w;
 		  else
 		    regval1_ID <= regval1_ID_w;
 		  if (op1_ID_w === OP1_SYS) 
@@ -276,7 +277,7 @@ module Project(
 		  else if (rt_ex_dep_w)
 		    regval2_ID <= aluout_EX_r;
 		  else if (rt_mem_dep_w)
-		    regval2_ID <= rd_mem_MEM_w ? rd_val_MEM_w : aluout_EX;
+		    regval2_ID <= out_MEM_w;
 		  else
 			 regval2_ID <= regval2_ID_w;
         wregno_ID <= wregno_ID_w;
@@ -444,6 +445,10 @@ module Project(
 								 sys_reg_MEM_w === 4'h3 ? IDN :
 								 sys_reg_MEM_w === 4'h4 ? PCS :
 								 {DBITS{1'b0}};
+  
+  assign out_MEM_w = rd_mem_MEM_w ? rd_val_MEM_w : 
+							op1_EX === OP1_SYS && op2_EX === OP2_RSR ? sys_val_MEM_w :
+							aluout_EX;
 
   always @ (posedge clk or posedge reset) begin
     if(reset) begin
@@ -453,9 +458,7 @@ module Project(
       ctrlsig_MEM <= 1'b0;
     end else begin
 		inst_MEM		<= inst_EX;
-      regval_MEM  <= rd_mem_MEM_w ? rd_val_MEM_w : 
-							op1_EX === OP1_SYS && op2_EX === OP2_RSR ? sys_val_MEM_w :
-							aluout_EX;
+      regval_MEM  <= out_MEM_w;
       wregno_MEM  <= wregno_EX;
       ctrlsig_MEM <= ctrlsig_EX[0];
     end

@@ -21,7 +21,7 @@ BEGIN
     004d : fc080530; --> 0134 : RSR		T0,IDN
     004e : 80000155; --> 0138 : ADDI		T0,T0,1
     004f : fc0c0350; --> 013c : WSR		IDN,T0
-    0050 : fc080530; --> 0140 : RSR		T0,IDN
+    0050 : fc080520; --> 0140 : RSR		T0,IHA
     0051 : 68f00005; --> 0144 : SW		T0,HEX(Zero)
     0052 : 20fff500; --> 0148 : BR		MainLoop
     0053 : 00010000; --> 014c : .WORD StkTop
