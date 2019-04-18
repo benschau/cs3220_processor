@@ -27,7 +27,8 @@ module Project(
 
   // Change this to fmedian2.mif before submitting
   //parameter IMEMINITFILE = "Test.mif";
-  parameter IMEMINITFILE = "test_intr.mif";
+  //parameter IMEMINITFILE = "fmedian2.mif";
+  parameter IMEMINITFILE = "xmax.mif";
   
   parameter IMEMADDRBITS = 16;
   parameter IMEMWORDBITS = 2;

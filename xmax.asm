@@ -1,11 +1,16 @@
 ; Addresses for I/O
 .NAME	HEX=  0xFFFFF000
 .NAME	LEDR= 0xFFFFF020
-.NAME	KEY=  0xFFFFF080
-.NAME	SW=   0xFFFFF090
 
-.NAME   TIMER=0xFFFFF100
-.NAME   TLIM=0xFFFFF104
+.NAME	KEY=  0xFFFFF080
+.NAME   KEYCTL=  0xFFFFF084
+
+.NAME	SW=   0xFFFFF090
+.NAME   SWCTL= 0xFFFFF094
+
+.NAME   TIMER= 0xFFFFF100
+.NAME   TLIM= 0xFFFFF104
+.NAME   TCTL= 0xFFFFF108
 
 ; The stack is at the top of memory
 .NAME	StkTop=65536
@@ -14,42 +19,56 @@
 .NAME   UpperHalf=0x3E0         ; 11111 00000
 .NAME   LowerHalf=0x01F         ; 00000 11111
 
-; State machine counter- we'll store a 0 here and count up to 17 in the 
-; timer interrupt handler.
-.NAME	Counter=0x1000      
-
 ; Store current state speed value (for hex display)
-.NAME   StateSpeed=0x1060
+.NAME   DefStateSpeed=4
 
 ; Default blink speed & increment units
-.NAME   DefBlinkSpeed=0x17D7840    ; 25000000
-.NAME   DefIncrementVal=0xBEBC20   ; 12500000 
+;.NAME   DefBlinkSpeed=0x3E8     ; 1000 ms = 1 s
+;.NAME   DefIncrementVal=0xFA    ; 250 ms = 1/4 s
+
+.NAME   DefBlinkSpeed=0x3E8     ; 1000 ms = 1 s
+.NAME   DefIncrementVal=0xC8    ; 200 ms = 1/5 s
 
 ; Maximum/Minimum blink speed 
-.NAME   MinBlinkSpeed=0xBEBC20     ; 12500000
-.NAME   MaxBlinkSpeed=0x5F5E100    ; 100000000
+;.NAME   MinBlinkSpeed=0xFA      ; 250 ms = 1/4 s
+;.NAME   MaxBlinkSpeed=0x7D0     ; 2000 ms = 2 s
+
+.NAME   MinBlinkSpeed=0x190      ; 400 ms = .4s
+.NAME   MaxBlinkSpeed=0x708      ; 1800 ms = 1.8s
 
 ; -----------------------------------------------------------------
 ; Processor Initialization
 .ORG 0x100
 	XOR		 Zero,Zero,Zero						; Put a zero in the Zero register
 	LW		 SP,StackTopVal(Zero)			    ; Load the initial stack-top value into the SP
-	SW       Zero,LEDR(Zero)						; Turn off LEDR
+	SW       Zero,LEDR(Zero)				    ; Turn off LEDR
 
     ; Setup speed display
-    ADDI    Zero,T0,StateSpeed                  ; Default speed state is at 4.
+    ADDI    Zero,S0,DefStateSpeed               ; Default speed state is at 4.
                                                 ; We incr/decr based on each key.
                                                 ; The digit we use to display is based on whichever switch is on (the first from the right)
-    ADDI    Zero,T1,4
-    SW      T1,0(T0)
+    SW      S0,HEX(Zero)
 
     ; Initialize state machine counter.
-    ADDI 	Zero,T0,Counter
-    SW		Zero,0(T0)
+    ADDI 	Zero,S1,0
+
+    ; Write BFIH address.
+    ADDI	Zero,T0,0x1000
+	WSR		IHA,T0
+
+    ; Enable interrupts in all devices:
+    ADDI    Zero,T0,0x10
+    SW      T0,KEYCTL(Zero)
+    SW      T0,SWCTL(Zero)
 
     ; Initialize our counter using the new Timer module; we count down from A0 (BlinkSpeed) and reset each time.
-    ADDI    Zero,A0,DefBlinkSpeed
-    SW      A0,TLIM(Zero)                    ; Store BlinkSpeed at TLIM (0xFFFFF104)
+    SW      T0,TCTL(Zero)
+    ADDI    Zero,S2,DefBlinkSpeed
+    SW      S2,TLIM(Zero)                    ; Store BlinkSpeed at TLIM (0xFFFFF104)
+
+    ; Enable interrupts in the processor.
+    ADDI    Zero,T0,0x01
+    WSR     PCS,T0
 
     Forever:
          JMP     Forever(Zero)                ; The BFIH handles checking current blinking state speed, 
@@ -57,21 +76,22 @@
    
 ; -----------------------------------------------------------------
 ; Interrupt Handler (BFIH)
-.ORG 0xFFFF0000
+.ORG 0x1000
     IntHandler:
     ; save general purpose registers to the (system) stack
     ; TODO: which registers to save? 
-    ADDI SSP,SSP,-16
+    ADDI SSP,SSP,-20
     SW A0,0(SSP)
     SW A1,4(SSP)
     SW A2,8(SSP)
     SW A3,12(SSP)
+    SW T0,16(SSP)
 
     RSR     A0,IDN ; Get cause of Interrupt
 
     ; Decide what to do based on A0
     ; We'll do this on a case by case basis so we don't have an interrupt vector table.
-    ADDI    A1,Zero,1
+    ADDI    Zero,A1,1
     BEQ     A0,A1,Timer         ; timer-id = 1
     ADDI    A1,A1,1
     BEQ     A0,A1,Key           ; key-id = 2
@@ -83,46 +103,46 @@
 
     ; Timer Handler
     Timer:
+        LW		T0,TCTL(Zero)               ; unset the ready bit
+	    ANDI	T0,T0,0xFFFFFFFE
+	    SW		T0,TCTL(Zero)
+
         ; show halves of the LEDR based on counter.
-        ADDI    Zero,A1,Counter
-        LW      A0,0(A1)
+        ; We store the state counter in S1.
 
         ; Check if counter is 18 or above:
         ADDI    Zero,A2,17
-        BGT     A0,A2,ResetCounter      ; Check if current counter > 17
+        BGT     S1,A2,ResetCounter      ; Check if current counter > 17
         BR      StateMachine
 
         ResetCounter:
-            ADDI    Zero,A2,0           ; A2 <= 0
-            ADDI    Zero,A0,Counter     ; A0 <= Counter 
-            SW      A2,0(A0)            ; Counter <= 0
-            ADDI    Zero,A1,0           ; A1 (Former counter contents) <= 0
+            ADDI    Zero,S1,0           ; S1 <= 0
 
         StateMachine:
             ADDI    Zero,A2,0
-            BEQ     A1,A2,State0
+            BEQ     S1,A2,State0
             ADDI    Zero,A2,2
-            BEQ     A1,A2,State2
+            BEQ     S1,A2,State2
             ADDI    Zero,A2,4
-            BEQ     A1,A2,State4
+            BEQ     S1,A2,State4
             ADDI    Zero,A2,6
-            BEQ     A1,A2,State6
+            BEQ     S1,A2,State6
             ADDI    Zero,A2,8
-            BEQ     A1,A2,State8
+            BEQ     S1,A2,State8
             ADDI    Zero,A2,10
-            BEQ     A1,A2,State10
+            BEQ     S1,A2,State10
             ADDI    Zero,A2,12
-            BEQ     A1,A2,State12
+            BEQ     S1,A2,State12
             ADDI    Zero,A2,13
-            BEQ     A1,A2,State13
+            BEQ     S1,A2,State13
             ADDI    Zero,A2,14
-            BEQ     A1,A2,State14
+            BEQ     S1,A2,State14
             ADDI    Zero,A2,15
-            BEQ     A1,A2,State15
+            BEQ     S1,A2,State15
             ADDI    Zero,A2,16
-            BEQ     A1,A2,State16
+            BEQ     S1,A2,State16
             ADDI    Zero,A2,17
-            BEQ     A1,A2,State17
+            BEQ     S1,A2,State17
 
             ; A state in which no LEDs are done.
             BR      EmptyState
@@ -153,44 +173,39 @@
 
         TimerCleanup:
             ; Increment the counter by one, re-store in the same place.
-            ADDI    A0,A0,1
-            ADDI    Zero,A1,Counter
-            SW      A0,0(A1)
+            ADDI    S1,S1,1
+            
 
             BR IntHandlerCleanup
 
     ; Key Handler
     Key:
-        ; TODO: Do I need to check KEYCTRL here first for the ready bit?
-
         ADDI    Zero,A2,1
-
         LW      A0,KEY(Zero)
         ANDI    A0,A1,1                         ; Check Key[0]
-        BEQ     A1,A2,IncrSpeed                 ; If Key[0] == 1, increase blink speed.
+        BEQ     A1,A2,IncrLen                   ; If Key[0] == 1, increase length of timer (increase blinkspeed)
+        BR      CheckNext
 
-        ANDI    A0,A1,2                         ; Check Key[2]
-        ADDI    Zero,A2,2
-        BEQ     A1,A2,DecrSpeed                 ; If Key[1] == 1, increase blink speed.
-
-        IncrSpeed:
+        IncrLen:
             ADDI    Zero,A1,DefIncrementVal
             LW      A0,TLIM(Zero)
 
             ADD     A2,A0,A1                    ; A2 <= TLIM/BlinkSpeed + DefIncrementVal
             ADDI    Zero,A1,MaxBlinkSpeed
-            BGT     A2,A1,IntHandlerCleanup 
+            BGT     A2,A1,CheckNext 
 
             SW      A2,TLIM(Zero)               ; If it's not past the max, store it.
-    
-            ADDI    Zero,A1,StateSpeed          
-            LW      A2,0(A1)                    ; A2 <= StateSpeed contents 
-            ADDI    A2,A2,1                     ; A2 <= A2 + 1     
-            SW      A2,0(A1)                    ; Update the StateSpeed (for the HEX display)
 
-            BR      IntHandlerCleanup
+            ADDI    S0,S0,1
+            SW      S0,HEX(Zero)
             
-        DecrSpeed:
+        CheckNext:
+            ANDI    A0,A1,2                         ; Check Key[1]
+            ADDI    Zero,A2,2
+            BEQ     A1,A2,DecrLen                   ; If Key[1] == 1, decrease length of timer (decrease blinkspeed).
+            BNE     A1,A2,IntHandlerCleanup
+        
+        DecrLen:
             ADDI    Zero,A1,DefIncrementVal
             LW      A0,TLIM(Zero)
 
@@ -200,44 +215,88 @@
 
             SW      A2,TLIM(Zero)               ; If it's not past the min, store it.
 
-            ADDI    Zero,A1,StateSpeed          
-            LW      A2,0(A1)                    ; A2 <= StateSpeed contents 
-            SUBI    A2,A2,1                     ; A2 <= A2 - 1     
-            SW      A2,0(A1)                    ; Update the StateSpeed (for the HEX display)
-
-            BR      IntHandlerCleanup
-
-    ; Switch Handler
-    Switch:
-        
-        ; TODO: Do I need to check SWCTRL here first for the ready bit?
-
-        LW      A0,SW(Zero)                     ; A0 <= SWDATA
-        ORI     A0,A0,1                         ; Force SW[0] to always be on so HEX[0] is always on.
-
-        ADDI    Zero,A2,0                       ; A2 <= hex contents, [23:0]
-        ADDI    Zero,A1,0                       ; A1 <= extract the on switches from A0.
-        DisplayHexLoop:
-            ADDI   Zero,A3,4                    ; A3 <= shift amount
-            LSHF   A2,A2,A3                     ; A2 <= A2 << 4 
-
-            ; A0[0] is 1, we OR StateSpeed. Otherwise, we just skip downward.
-            ANDI   A0,A1,1                      ; Check SW[0]
-            ADDI   Zero,A3,1                    ; A3 <= 1
-            RSHF   A0,A0,A3                     ; A0 <= A0 >> 1
-
-            BNE    A1,A3,NextHex                ; A1 != A3 (SW[0] != 1)
-
-            ADDI   Zero,A1,StateSpeed
-            LW     A3,0(A1)                     ; Store the current contents of StateSpeed.
-            OR     A2,A2,A3                     ; Put StateSpeed into the new place we've made for it. 
-            
-            NextHex:
-                BNE     A0,Zero,DisplayHexLoop      ; A0 != 0, continue to loop to fill A2.
-
-        SW      A2,HEX(Zero)                    ; Store the hex contents into HEX.
+            SUBI    S0,S0,1
+            SW      S0,HEX(Zero)
 
         BR      IntHandlerCleanup
+
+    ; Switch Handler
+    Switch:  
+        LW      A0,SW(Zero)                     ; A0 <= SWDATA
+        ORI     A0,A0,1                         ; Force SW[0] to always be on so HEX[0] is always on.
+        ANDI    A0,A0,0x3F                      ; Don't check SW[6..9]
+
+        ; S1 <= current state speed value
+        ; A2 <= Total HEX.
+        ADDI    Zero,A2,0
+
+        ; check SW[0]
+        ADDI    Zero,A3,1   
+        ANDI    A0,A1,1
+        
+        BNE     A1,A3,CheckSW1
+
+        ADDI    Zero,T0,0
+        LSHF    A3,S0,T0                         ; A3 <= S0 << 0        
+        OR      A2,A2,A3                            
+
+        ; check SW[1]
+        CheckSW1:
+            ADDI    Zero,A3,2   
+            ANDI    A0,A1,2
+        
+            BNE     A1,A3,CheckSW2
+
+            ADDI    Zero,T0,4
+            LSHF    A3,S0,T0                      ; A3 <= S0 << 4   
+            OR      A2,A2,A3
+
+        ; check SW[2]
+        CheckSW2:
+            ADDI    Zero,A3,4   
+            ANDI    A0,A1,4
+        
+            BNE     A1,A3,CheckSW3
+
+            ADDI    Zero,T0,8
+            LSHF    A3,S0,T0                       ; A3 <= S0 << 8
+            OR      A2,A2,A3
+
+        ; check SW[3]
+        CheckSW3:
+            ADDI    Zero,A3,8   
+            ANDI    A0,A1,8
+        
+            BNE     A1,A3,CheckSW4
+
+            ADDI    Zero,T0,12
+            LSHF    A3,S0,T0                       ; A3 <= S0 << 12
+            OR      A2,A2,A3
+
+        ; check SW[4]
+        CheckSW4:
+            ADDI    Zero,A3,16
+            ANDI    A0,A1,16
+        
+            BNE     A1,A3,CheckSW5
+
+            ADDI    Zero,T0,16
+            LSHF    A3,S0,T0                       ; A3 <= S0 << 16
+            OR      A2,A2,A3
+
+        ; check SW[5]
+        CheckSW5:
+            ADDI    Zero,A3,32
+            ANDI    A0,A1,32
+        
+            BNE     A1,A3,EndCheckSW
+
+            ADDI    Zero,T0,20
+            LSHF    A3,S0,T0                       ; A3 <= S0 << 20
+            OR      A2,A2,A3
+
+        EndCheckSW:
+            SW      A2,HEX(Zero)                    ; Store the hex contents into HEX.
 
     IntHandlerCleanup: 
         ; Restore general purpose registers to the stack
@@ -246,7 +305,8 @@
         LW      A1,4(SSP)
         LW      A2,8(SSP)
         LW      A3,12(SSP)
-        ADDI    SSP,SSP,16
+        LW      T0,16(SSP)
+        ADDI    SSP,SSP,20
 
         ; Return, enable interrupts
         RETI
