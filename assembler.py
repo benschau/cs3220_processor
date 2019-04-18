@@ -205,7 +205,7 @@ def assemble(source, depth=16384, width=32, address_radix='HEX', data_radix='HEX
 
                     rs = regs[t[2].lower()] 
 
-                    bin32 = opcode + rd + rs + '0000000000'
+                    bin32 = opcode + '000000' + rd + rs + '0000'
 
             if t[0] in EXT_TYPE:
 

@@ -20,7 +20,8 @@
 	
 	ADDI		Zero,A0,500
 	SW		A0,TLIM(Zero)
-	WSR		IDN,Zero
+	ADDI		Zero,T0,100
+	WSR		IDN,T0
 
 MainLoop:
 	LW		T0,TCTL(Zero)

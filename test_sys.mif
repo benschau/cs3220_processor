@@ -6,23 +6,24 @@ CONTENT
 BEGIN
     [0000..00ff] : dead;
     0040 : 00980000; --> 0100 : XOR		Zero,Zero,Zero
-    0041 : 4801480e; --> 0104 : LW		SP,StackTopVal(Zero)
+    0041 : 48014c0e; --> 0104 : LW		SP,StackTopVal(Zero)
     0042 : 68f02000; --> 0108 : SW		Zero,LEDR(Zero)
     0043 : 68f00000; --> 010c : SW		Zero,HEX(Zero)
     0044 : 8001f401; --> 0110 : ADDI		Zero,A0,500
     0045 : 68f10401; --> 0114 : SW		A0,TLIM(Zero)
-    0046 : fc0cc000; --> 0118 : WSR		IDN,Zero
-    0047 : 48f10805; --> 011c : LW		T0,TCTL(Zero)
-    0048 : 90000156; --> 0120 : ANDI		T0,T1,1
-    0049 : 20fffd06; --> 0124 : BEQ		Zero,T1,MainLoop
-    004a : 90fffe55; --> 0128 : ANDI		T0,T0,0xFFFFFFFE
-    004b : 68f10805; --> 012c : SW		T0,TCTL(Zero)
-    004c : fc094c00; --> 0130 : RSR		T0,IDN
-    004d : 80000155; --> 0134 : ADDI		T0,T0,1
-    004e : fc0cd400; --> 0138 : WSR		IDN,T0
-    004f : fc094c00; --> 013c : RSR		T0,IDN
-    0050 : 68f00005; --> 0140 : SW		T0,HEX(Zero)
-    0051 : 20fff500; --> 0144 : BR		MainLoop
-    0052 : 00010000; --> 0148 : .WORD StkTop
-    [0053..3fff] : dead;
+    0046 : 80006405; --> 0118 : ADDI		Zero,T0,100
+    0047 : fc0c0350; --> 011c : WSR		IDN,T0
+    0048 : 48f10805; --> 0120 : LW		T0,TCTL(Zero)
+    0049 : 90000156; --> 0124 : ANDI		T0,T1,1
+    004a : 20fffd06; --> 0128 : BEQ		Zero,T1,MainLoop
+    004b : 90fffe55; --> 012c : ANDI		T0,T0,0xFFFFFFFE
+    004c : 68f10805; --> 0130 : SW		T0,TCTL(Zero)
+    004d : fc080530; --> 0134 : RSR		T0,IDN
+    004e : 80000155; --> 0138 : ADDI		T0,T0,1
+    004f : fc0c0350; --> 013c : WSR		IDN,T0
+    0050 : fc080530; --> 0140 : RSR		T0,IDN
+    0051 : 68f00005; --> 0144 : SW		T0,HEX(Zero)
+    0052 : 20fff500; --> 0148 : BR		MainLoop
+    0053 : 00010000; --> 014c : .WORD StkTop
+    [0054..3fff] : dead;
 END;
