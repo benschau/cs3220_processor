@@ -23,10 +23,11 @@ module Project(
   parameter ADDRLEDR = 32'hFFFFF020;
   parameter ADDRKEY  = 32'hFFFFF080;
   parameter ADDRSW   = 32'hFFFFF090;
+  parameter ADDRTIMER = 32'hFFFFF100;
 
   // Change this to fmedian2.mif before submitting
   //parameter IMEMINITFILE = "Test.mif";
-  parameter IMEMINITFILE = "test_hex.mif";
+  parameter IMEMINITFILE = "test_timer.mif";
   
   parameter IMEMADDRBITS = 16;
   parameter IMEMWORDBITS = 2;
@@ -472,6 +473,35 @@ module Project(
 	 .RESET(reset)
   );
   
+  Key #(.BITS(DBITS), .BASE(ADDRKEY)) key(
+	 .ABUS(abus), 
+	 .DBUS(dbus),
+	 .KEY(KEY),
+	 .WE(we),
+	 .INTR(intr_key),
+	 .CLK(clk),
+	 .RESET(reset)
+  );
+  
+  Switch #(.BITS(DBITS), .BASE(ADDRSW)) switch(
+	 .ABUS(abus), 
+	 .DBUS(dbus),
+	 .SW(SW),
+	 .WE(we),
+	 .INTR(intr_sws),
+	 .CLK(clk),
+	 .RESET(reset)
+  );
+  
+  Timer #(.BITS(DBITS), .BASE(ADDRTIMER)) timer(
+	 .ABUS(abus), 
+	 .DBUS(dbus),
+	 .WE(we),
+	 .INTR(intr_timer),
+	 .CLK(clk),
+	 .RESET(reset)
+  );
+  
 endmodule
 
 
@@ -666,6 +696,190 @@ module Hex(ABUS, DBUS, WE, OUTHEX5, OUTHEX4, OUTHEX3, OUTHEX2, OUTHEX1, OUTHEX0,
 		/*HEX0 == 4'hf*/ 7'b0001110 ;
   
 	assign DBUS = rdData ? {8'b0,HEXDATA} :
+					  {BITS{1'bz}};
+	
+endmodule
+
+module Key(ABUS, DBUS, KEY, WE, INTR, CLK, RESET);
+	parameter BITS;
+	parameter BASE;
+	
+	input wire [(BITS-1):0] ABUS;
+	inout wire [(BITS-1):0] DBUS;
+	input wire [3:0] KEY;
+	input wire CLK, WE, RESET;
+	output wire INTR;
+	
+	wire selData = (ABUS === BASE);
+	wire selCtl = (ABUS === BASE + 4);
+	reg [3:0] sample;
+	reg [3:0] last_sample;
+	reg [3:0] KEYDATA;
+	reg [(BITS-1):0] KEYCTRL;
+	reg [3:0] clockCount;
+	always @ (posedge CLK or posedge RESET) begin 
+		if (RESET) begin
+			KEYDATA <= 4'h0;
+			KEYCTRL <= {(BITS-1){1'b0}};
+			last_sample <= 4'h0;
+			sample <= 4'h0;
+			clockCount <= 4'h0;
+		end else begin
+			if (selData && !WE) begin
+				KEYCTRL[0] <= 0;
+			end
+			if (clockCount === 4'hF) begin
+				if (last_sample === sample && KEYDATA !== sample) begin
+					KEYDATA <= sample;
+					if (KEYCTRL[0]) begin
+						KEYCTRL[1] <= 1;
+					end else begin
+						KEYCTRL[0] <= 1;
+					end
+				end
+				sample <= ~KEY;
+				last_sample <= sample;
+				clockCount <= 4'h0;
+			end
+			clockCount <= clockCount + 4'h1;
+			if (selCtl && WE) begin
+				if (DBUS[1] === 0) begin
+					KEYCTRL[1] <= 0;
+				end
+				KEYCTRL[4] <= DBUS[4];
+			end
+		end
+	end
+	
+	assign INTR = KEYCTRL[0] && KEYCTRL[4];
+	assign DBUS = (selData && !WE) ? {{(BITS-4){1'b0}},KEYDATA} : 
+					  (selCtl && !WE) ? KEYCTRL : 
+					  {BITS{1'bz}};
+endmodule
+
+module Switch(ABUS, DBUS, SW, WE, INTR, CLK, RESET);
+	parameter BITS;
+	parameter BASE;
+	
+	input wire [(BITS-1):0] ABUS;
+	inout wire [(BITS-1):0] DBUS;
+	input wire [9:0] SW;
+	input wire CLK, WE, RESET;
+	output wire INTR;
+	
+	wire selData = (ABUS === BASE);
+	wire selCtl = (ABUS === BASE + 4);
+	reg [9:0] sample;
+	reg [9:0] last_sample;
+	reg [9:0] SDATA;
+	reg [(BITS-1):0] SCTRL;
+	reg [11:0] clockCount;
+	always @ (posedge CLK or posedge RESET) begin 
+		if (RESET) begin
+			SDATA <= 10'h0;
+			SCTRL <= {(BITS-1){1'b0}};
+			sample <= 10'h0;
+			last_sample <= 10'h0;
+			clockCount <= 12'h0;
+		end else begin
+			if (selData && !WE) begin
+				SCTRL[0] <= 0;
+			end
+			if (clockCount === 12'hFFF) begin
+				if (last_sample === sample && SDATA !== sample) begin
+					SDATA <= sample;
+					SCTRL[0] <= 1;
+				end
+				sample <= SW;
+				last_sample <= sample;
+				clockCount <= 12'h0;
+			end
+			clockCount <= clockCount + 12'h1;
+			if (WE) begin
+				if (DBUS[1] === 0) begin
+					SCTRL[1] <= 0;
+				end
+				SCTRL[4] <= DBUS[4];
+			end
+		end
+	end
+	
+	assign INTR = SCTRL[0] && SCTRL[4];
+	assign DBUS = (selData && !WE) ? {{(BITS-10){1'b0}},SDATA} : 
+					  (selCtl && !WE) ? SCTRL : 
+					  {BITS{1'bz}};
+endmodule
+
+module Timer(ABUS, DBUS, WE, INTR, CLK, RESET);
+	parameter BITS;
+	parameter BASE;
+	parameter CLOCK_FREQ = 100000000;
+	
+	input wire [(BITS-1):0] ABUS;
+	inout wire [(BITS-1):0] DBUS;
+	input wire WE, CLK, RESET;
+	output wire INTR;
+	
+	wire selCnt = (ABUS === BASE);
+	wire selLim = (ABUS === BASE + 4);
+	wire selCtl = (ABUS === BASE + 8); // select TCTL
+	
+	wire rdLim = (!WE) && selLim;
+	wire rdCtl = (!WE) && selCtl;
+	wire rdCnt = (!WE) && selCnt;
+	
+	reg [(BITS - 1):0] TCNT; // current value of counter
+	reg [(BITS - 1):0] TLIM; // counter limit
+	reg [(BITS - 1):0] TCTL; // control/status reg
+	
+	reg [(BITS - 1):0] ms_count;
+	
+	always @ (posedge CLK or posedge RESET) begin
+		if (RESET) begin 
+			TCNT <= {(BITS - 1){1'b0}};
+			TLIM <= {(BITS - 1){1'b0}};
+			TCTL <= {(BITS - 1){1'b0}};
+			ms_count <= {(BITS-1){1'b0}};
+		end else begin 
+			if (WE) begin
+				if (selCnt) begin
+					TCNT <= DBUS;
+				end else if (selLim) begin
+					TCNT <= 0;
+					TLIM <= DBUS;
+				end
+			
+				if (selCtl) begin
+					if (DBUS[0] == 0) 
+						TCTL[0] <= DBUS[0];	// clear ready bit
+					
+					if (DBUS[1] == 0) 
+						TCTL[1] <= DBUS[1];	// clear overflow bit
+					
+					TCTL[4] <= DBUS[4]; 	// fill interrupt bit
+				end
+			end
+			
+			if ((TLIM != 0) && (TCNT >= TLIM)) begin
+				TCNT <= 0;
+				if (TCTL[0]) begin
+					TCTL[1] <= 1;
+				end else begin
+					TCTL[0] <= 1;
+				end
+			end
+			ms_count <= ms_count + 1;
+			if (ms_count >= CLOCK_FREQ / 1000) begin
+				TCNT <= TCNT + 1;
+				ms_count <= 0;
+			end
+		end
+	end
+	
+	assign INTR = TCTL[4] && TCTL[0];
+	assign DBUS = rdCtl ? {TCTL} :
+					  rdCnt ? {TCNT} :
+					  rdLim ? {TLIM} :
 					  {BITS{1'bz}};
 	
 endmodule

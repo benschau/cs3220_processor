@@ -13,26 +13,18 @@
 	XOR		Zero,Zero,Zero						; Put a zero in the Zero register
 	LW		SP,StackTopVal(Zero)			; Load the initial stack-top value into the SP
 	SW		Zero,LEDR(Zero)						; Turn off LEDR
-	ADDI		Zero,A0,0x0FFF
-	ADDI		Zero,T0,12
-	LSHF		A0,A0,T0
-	ADDI		A0,A0,0x0FFF
-	SW		A0,HEX(Zero)
-MainLoop:
+	SW		Zero,HEX(Zero)
+	ADDI		Zero,A0,SW
+Poll:
+	LW		T0,4(A0)
+	ANDI		T0,T0,0x1
+	BEQ		T0,Zero,Poll
+	LW		T0,SW(Zero)
+	SW		T0,LEDR(Zero)
 	LW		T0,HEX(Zero)
-	SUBI		T0,T0,1
+	ADDI		T0,T0,1
 	SW		T0,HEX(Zero)
-	BNE		Zero,T0,MainLoop
-	LW		T1,LEDR(Zero)
-	XORI		T1,T1,0x3FF
-	SW		T1,LEDR(Zero)
-	ADDI		Zero,A0,0x0FFF
-	ADDI		Zero,T0,12
-	LSHF		A0,A0,T0
-	ADDI		A0,A0,0x0FFF
-	SW		A0,HEX(Zero)
-	BR		MainLoop
-	
+	BR 		Poll
 
 ; -----------------------------------------------------------------
 StackTopVal:

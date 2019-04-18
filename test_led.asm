@@ -19,7 +19,10 @@ MainLoop:
 	LW		T0,LEDR(Zero)
 	XORI		T0,T0,0x3FF
 	SW		T0,LEDR(Zero)
-	ADDI		Zero,T0,0xFFFFFF
+	ADDI		Zero,T0,0x0FFF
+	ADDI		Zero,T1,12
+	LSHF		T0,T0,T1
+	ADDI		T0,T0,0x0FFF
 WaitLoop:
 	SUBI		T0,T0,1
 	SW 		T0, HEX(Zero)

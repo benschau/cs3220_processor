@@ -1,0 +1,31 @@
+DEPTH = 16384;
+WIDTH = 32;
+ADDRESS_RADIX = HEX;
+DATA_RADIX = HEX;
+CONTENT
+BEGIN
+    [0000..00ff] : dead;
+    0040 : 00980000; --> 0100 : XOR		Zero,Zero,Zero
+    0041 : 4801540e; --> 0104 : LW		SP,StackTopVal(Zero)
+    0042 : 68f02000; --> 0108 : SW		Zero,LEDR(Zero)
+    0043 : 800fff01; --> 010c : ADDI		Zero,A0,0x0FFF
+    0044 : 80000c05; --> 0110 : ADDI		Zero,T0,12
+    0045 : 00c40115; --> 0114 : LSHF		A0,A0,T0
+    0046 : 800fff11; --> 0118 : ADDI		A0,A0,0x0FFF
+    0047 : 68f00001; --> 011c : SW		A0,HEX(Zero)
+    0048 : 48f00005; --> 0120 : LW		T0,HEX(Zero)
+    0049 : 80ffff55; --> 0124 : SUBI		T0,T0,1
+    004a : 68f00005; --> 0128 : SW		T0,HEX(Zero)
+    004b : 2cfffc05; --> 012c : BNE		Zero,T0,MainLoop
+    004c : 48f02006; --> 0130 : LW		T1,LEDR(Zero)
+    004d : 9803ff66; --> 0134 : XORI		T1,T1,0x3FF
+    004e : 68f02006; --> 0138 : SW		T1,LEDR(Zero)
+    004f : 800fff01; --> 013c : ADDI		Zero,A0,0x0FFF
+    0050 : 80000c05; --> 0140 : ADDI		Zero,T0,12
+    0051 : 00c40115; --> 0144 : LSHF		A0,A0,T0
+    0052 : 800fff11; --> 0148 : ADDI		A0,A0,0x0FFF
+    0053 : 68f00001; --> 014c : SW		A0,HEX(Zero)
+    0054 : 20fff300; --> 0150 : BR		MainLoop
+    0055 : 00010000; --> 0154 : .WORD StkTop
+    [0056..3fff] : dead;
+END;

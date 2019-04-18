@@ -3,6 +3,9 @@
 .NAME	LEDR=0xFFFFF020
 .NAME	KEY= 0xFFFFF080
 .NAME	SW=  0xFFFFF090
+.NAME   TIMER= 0xFFFFF100
+.NAME   TLIM= 0xFFFFF104
+.NAME   TCTL= 0xFFFFF108
 
 ; The stack is at the top of memory
 .NAME	StkTop=65536
@@ -13,26 +16,21 @@
 	XOR		Zero,Zero,Zero						; Put a zero in the Zero register
 	LW		SP,StackTopVal(Zero)			; Load the initial stack-top value into the SP
 	SW		Zero,LEDR(Zero)						; Turn off LEDR
-	ADDI		Zero,A0,0x0FFF
-	ADDI		Zero,T0,12
-	LSHF		A0,A0,T0
-	ADDI		A0,A0,0x0FFF
-	SW		A0,HEX(Zero)
-MainLoop:
-	LW		T0,HEX(Zero)
-	SUBI		T0,T0,1
-	SW		T0,HEX(Zero)
-	BNE		Zero,T0,MainLoop
-	LW		T1,LEDR(Zero)
-	XORI		T1,T1,0x3FF
-	SW		T1,LEDR(Zero)
-	ADDI		Zero,A0,0x0FFF
-	ADDI		Zero,T0,12
-	LSHF		A0,A0,T0
-	ADDI		A0,A0,0x0FFF
-	SW		A0,HEX(Zero)
-	BR		MainLoop
+	SW		Zero,HEX(Zero)
 	
+	ADDI		Zero,A0,500
+	SW		A0,TLIM(Zero)
+
+MainLoop:
+	LW		T0,TCTL(Zero)
+	ANDI		T0,T1,1
+	BEQ		Zero,T1,MainLoop
+	ANDI		T0,T0,0xFFFFFFFE
+	SW		T0,TCTL(Zero)
+	LW		T0,HEX(Zero)
+	ADDI		T0,T0,1
+	SW		T0,HEX(Zero)
+	BR		MainLoop
 
 ; -----------------------------------------------------------------
 StackTopVal:

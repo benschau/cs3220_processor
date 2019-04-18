@@ -6,17 +6,20 @@ CONTENT
 BEGIN
     [0000..00ff] : dead;
     0040 : 00980000; --> 0100 : XOR		Zero,Zero,Zero
-    0041 : 4801300e; --> 0104 : LW		SP,StackTopVal(Zero)
+    0041 : 48013c0e; --> 0104 : LW		SP,StackTopVal(Zero)
     0042 : 68f02000; --> 0108 : SW		Zero,LEDR(Zero)
     0043 : 68f00000; --> 010c : SW		Zero,HEX(Zero)
     0044 : 48f02005; --> 0110 : LW		T0,LEDR(Zero)
     0045 : 9803ff55; --> 0114 : XORI		T0,T0,0x3FF
     0046 : 68f02005; --> 0118 : SW		T0,LEDR(Zero)
-    0047 : 80ffff05; --> 011c : ADDI		Zero,T0,0xFFFFFF
-    0048 : 80ffff55; --> 0120 : SUBI		T0,T0,1
-    0049 : 68f00005; --> 0124 : SW 		T0, HEX(Zero)
-    004a : 20fff950; --> 0128 : BEQ		T0,Zero,MainLoop
-    004b : 20fffc00; --> 012c : BR		WaitLoop
-    004c : 00010000; --> 0130 : .WORD StkTop
-    [004d..3fff] : dead;
+    0047 : 800fff05; --> 011c : ADDI		Zero,T0,0x0FFF
+    0048 : 80000c06; --> 0120 : ADDI		Zero,T1,12
+    0049 : 00c40556; --> 0124 : LSHF		T0,T0,T1
+    004a : 800fff55; --> 0128 : ADDI		T0,T0,0x0FFF
+    004b : 80ffff55; --> 012c : SUBI		T0,T0,1
+    004c : 68f00005; --> 0130 : SW 		T0, HEX(Zero)
+    004d : 20fff650; --> 0134 : BEQ		T0,Zero,MainLoop
+    004e : 20fffc00; --> 0138 : BR		WaitLoop
+    004f : 00010000; --> 013c : .WORD StkTop
+    [0050..3fff] : dead;
 END;
