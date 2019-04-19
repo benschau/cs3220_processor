@@ -8,7 +8,7 @@ BEGIN
     0040 : 00980000; --> 0100 : XOR		 Zero,Zero,Zero
     0041 : 4812080e; --> 0104 : LW		 SP,StackTopVal(Zero)
     0042 : 68f02000; --> 0108 : SW       Zero,LEDR(Zero)
-    0043 : 80000407; --> 010c : ADDI    Zero,S0,DefStateSpeed
+    0043 : 80000207; --> 010c : ADDI    Zero,S0,DefStateSpeed
     0044 : 68f00007; --> 0110 : SW      S0,HEX(Zero)
     0045 : 80000008; --> 0114 : ADDI 	Zero,S1,0
     0046 : 80100005; --> 0118 : ADDI	Zero,T0,0x1000
@@ -17,7 +17,7 @@ BEGIN
     0049 : 68f08405; --> 0124 : SW      T0,KEYCTL(Zero)
     004a : 68f09405; --> 0128 : SW      T0,SWCTL(Zero)
     004b : 68f10805; --> 012c : SW      T0,TCTL(Zero)
-    004c : 8003e809; --> 0130 : ADDI    Zero,S2,DefBlinkSpeed
+    004c : 8001f409; --> 0130 : ADDI    Zero,S2,DefBlinkSpeed
     004d : 68f10409; --> 0134 : SW      S2,TLIM(Zero)
     004e : 80000105; --> 0138 : ADDI    Zero,T0,0x01
     004f : fc0c0450; --> 013c : WSR     PCS,T0
@@ -82,24 +82,24 @@ BEGIN
     0438 : 80000103; --> 10e0 : ADDI    Zero,A2,1
     0439 : 48f08001; --> 10e4 : LW      A0,KEY(Zero)
     043a : 90000112; --> 10e8 : ANDI    A0,A1,1
-    043b : 20000123; --> 10ec : BEQ     A1,A2,IncrLen
-    043c : 20000800; --> 10f0 : BR      CheckNext
-    043d : 8000c802; --> 10f4 : ADDI    Zero,A1,DefIncrementVal
-    043e : 48f10401; --> 10f8 : LW      A0,TLIM(Zero)
-    043f : 00800312; --> 10fc : ADD     A2,A0,A1
-    0440 : 80070802; --> 1100 : ADDI    Zero,A1,MaxBlinkSpeed
-    0441 : 24000323; --> 1104 : BGT     A2,A1,CheckNext
-    0442 : 68f10403; --> 1108 : SW      A2,TLIM(Zero)
-    0443 : 80000177; --> 110c : ADDI    S0,S0,1
-    0444 : 68f00007; --> 1110 : SW      S0,HEX(Zero)
-    0445 : 90000212; --> 1114 : ANDI    A0,A1,2
-    0446 : 80000203; --> 1118 : ADDI    Zero,A2,2
-    0447 : 20000123; --> 111c : BEQ     A1,A2,DecrLen
-    0448 : 2c000923; --> 1120 : BNE     A1,A2,Switch
-    0449 : 8000c802; --> 1124 : ADDI    Zero,A1,DefIncrementVal
+    043b : 20000423; --> 10ec : BEQ     A1,A2,IncrLen
+    043c : 80000203; --> 10f0 : ADDI    Zero,A2,2
+    043d : 90000212; --> 10f4 : ANDI    A0,A1,2
+    043e : 20000a23; --> 10f8 : BEQ     A1,A2,DecrLen
+    043f : 20001200; --> 10fc : BR      Switch
+    0440 : 8000fa02; --> 1100 : ADDI    Zero,A1,DefIncrementVal
+    0441 : 48f10401; --> 1104 : LW      A0,TLIM(Zero)
+    0442 : 00800312; --> 1108 : ADD     A2,A0,A1
+    0443 : 8007d002; --> 110c : ADDI    Zero,A1,MaxBlinkSpeed
+    0444 : 24000d23; --> 1110 : BGT     A2,A1,Switch
+    0445 : 68f10403; --> 1114 : SW      A2,TLIM(Zero)
+    0446 : 80000177; --> 1118 : ADDI    S0,S0,1
+    0447 : 68f00007; --> 111c : SW      S0,HEX(Zero)
+    0448 : 20000900; --> 1120 : BR      Switch
+    0449 : 8000fa02; --> 1124 : ADDI    Zero,A1,DefIncrementVal
     044a : 48f10401; --> 1128 : LW      A0,TLIM(Zero)
     044b : 00a00312; --> 112c : SUB     A2,A0,A1
-    044c : 80019002; --> 1130 : ADDI    Zero,A1,MinBlinkSpeed
+    044c : 8000fa02; --> 1130 : ADDI    Zero,A1,MinBlinkSpeed
     044d : 24000432; --> 1134 : BLT     A2,A1,Switch
     044e : 68f10403; --> 1138 : SW      A2,TLIM(Zero)
     044f : 80ffff77; --> 113c : SUBI    S0,S0,1

@@ -20,21 +20,13 @@
 .NAME   LowerHalf=0x01F         ; 00000 11111
 
 ; Store current state speed value (for hex display)
-.NAME   DefStateSpeed=4
+.NAME   DefStateSpeed=2
 
-; Default blink speed & increment units
-;.NAME   DefBlinkSpeed=0x3E8     ; 1000 ms = 1 s
-;.NAME   DefIncrementVal=0xFA    ; 250 ms = 1/4 s
+.NAME   DefBlinkSpeed=500
+.NAME   DefIncrementVal=250
 
-.NAME   DefBlinkSpeed=0x3E8     ; 1000 ms = 1 s
-.NAME   DefIncrementVal=0xC8    ; 200 ms = 1/5 s
-
-; Maximum/Minimum blink speed 
-;.NAME   MinBlinkSpeed=0xFA      ; 250 ms = 1/4 s
-;.NAME   MaxBlinkSpeed=0x7D0     ; 2000 ms = 2 s
-
-.NAME   MinBlinkSpeed=0x190      ; 400 ms = .4s
-.NAME   MaxBlinkSpeed=0x708      ; 1800 ms = 1.8s
+.NAME   MinBlinkSpeed=250
+.NAME   MaxBlinkSpeed=2000
 
 ; -----------------------------------------------------------------
 ; Processor Initialization
@@ -184,7 +176,10 @@
         LW      A0,KEY(Zero)
         ANDI    A0,A1,1                         ; Check Key[0]
         BEQ     A1,A2,IncrLen                   ; If Key[0] == 1, increase length of timer (increase blinkspeed)
-        BR      CheckNext
+        ADDI    Zero,A2,2
+        ANDI    A0,A1,2
+        BEQ     A1,A2,DecrLen
+        BR      Switch
 
         IncrLen:
             ADDI    Zero,A1,DefIncrementVal
@@ -192,18 +187,13 @@
 
             ADD     A2,A0,A1                    ; A2 <= TLIM/BlinkSpeed + DefIncrementVal
             ADDI    Zero,A1,MaxBlinkSpeed
-            BGT     A2,A1,CheckNext 
+            BGT     A2,A1,Switch 
 
             SW      A2,TLIM(Zero)               ; If it's not past the max, store it.
 
             ADDI    S0,S0,1
             SW      S0,HEX(Zero)
-            
-        CheckNext:
-            ANDI    A0,A1,2                         ; Check Key[1]
-            ADDI    Zero,A2,2
-            BEQ     A1,A2,DecrLen                   ; If Key[1] == 1, decrease length of timer (decrease blinkspeed).
-            BNE     A1,A2,Switch
+            BR      Switch
         
         DecrLen:
             ADDI    Zero,A1,DefIncrementVal
@@ -217,8 +207,7 @@
 
             SUBI    S0,S0,1
             SW      S0,HEX(Zero)
-
-        BR      Switch
+            BR      Switch
 
     ; Switch Handler
     Switch:  
